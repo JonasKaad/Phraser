@@ -10,31 +10,14 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.colorScheme) var colorScheme
-    @Query private var categories: [Category]
+    @Query var categories: [Category]
     let columns = [
             GridItem(.flexible()),
             GridItem(.flexible())
     ]
-    
+    @State private var isShowingAddSheet = false
+
     var body: some View {
-        
-//        NavigationSplitView {
-//            List(categories) { category in
-//                VStack {
-//
-//                    HStack
-//                    {
-//                        CategoryView(category: category)
-//                        CategoryView(category: category)
-//                    }
-//                }
-//                Spacer()
-//            }
-//        }detail: {
-//            Text("Create a category")
-//        }
-//        categoryCard
         VStack(alignment: .leading, spacing: 20) {
                     Text("Phrasebook")
                         .font(.largeTitle)
@@ -47,17 +30,20 @@ struct ContentView: View {
                     CategoryView(category: category)
                 }
                 // Add button
-                Button(action: createCategory) {
-                    AddCategoryView()
+                Button(action: {
+                    isShowingAddSheet.toggle()}) {
+                    AddView()
                 }
             }
             
         }
         .padding()
         }
+        .sheet(isPresented: $isShowingAddSheet) {
+                    AddCategoryView(isPresented: $isShowingAddSheet, createCategory: createCategory)
+                }
     }
     
-    // private view that contains the category name and the emoji/logo
     struct CategoryView: View {
         var category: Category
         var body: some View {
@@ -78,7 +64,7 @@ struct ContentView: View {
         }
     }
     
-    struct AddCategoryView: View {
+    struct AddView: View {
         var body: some View {
             VStack(spacing: 10) {
                 Image(systemName:"plus")
@@ -100,19 +86,73 @@ struct ContentView: View {
             
     }
     
-    
+    struct AddCategoryView: View {
+        @Binding var isPresented: Bool
+        let createCategory: (String, String) -> Void
 
-    private func createCategory() {
-        withAnimation(.spring()) {
-        
-            // prompt the user to enter name for the category and select an emoji
-            let categoryName = "Test"
-            let categoryLogo = "folder"
-            let newCategory = Category(timestamp: Date(), id: UUID(), name: categoryName, logo: categoryLogo)
+        @State private var newCategoryName = ""
+        @State private var selectedIcon = "folder"
             
-            modelContext.insert(newCategory)
-        }
+        private let icons = [
+            "folder.fill", "fork.knife", "wineglass.fill", "translate", "bus", "airplane", "hand.raised.fill", "map.fill", "sos", "cloud.fill", "bell.fill", "camera.fill",
+        ]
+        private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 6)
+        var body: some View {
+                Form {
+                    TextField("Category Name", text: $newCategoryName)
+                    .frame(height: 40)
+                    .font(.system(size: 24))
+
+                    Section("icon") {
+                            LazyVGrid(columns: columns, spacing: 10) {
+                                ForEach(icons, id: \.self) { icon in
+                                Button(action: {
+                                    selectedIcon = icon
+                                }) {
+                                    Image(systemName: icon)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 28, height: 28)
+                                        .padding()
+                                        .background(selectedIcon == icon ? Color.blue.opacity(0.2) : Color.clear)
+                                        .foregroundStyle(.blue)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+            
+                                .background(selectedIcon == icon ? Color.teal.opacity(0.1) : Color.clear)
+                                    
+                                .border(selectedIcon == icon ? Color.blue.opacity(0.8): Color.clear)
+                                .cornerRadius(2)
+                            }
+                        }
+                    }
+                    
+                    Button("Add Category") {
+                        createCategory(newCategoryName, selectedIcon)
+                        isPresented = false
+                    }
+                    .disabled(newCategoryName.isEmpty)
+                    .frame(maxWidth: .infinity)
+                    .font(.title2)
+                    .padding()
+                    .foregroundColor(.white)
+                    
+                    .background(newCategoryName.isEmpty ? Color.gray : Color.blue)
+                    .listRowBackground(newCategoryName.isEmpty ? Color.gray:Color.blue)
+                
+                    .cornerRadius(8)
+                }
+            }
     }
+    
+    private func createCategory(_name: String, _logo: String) {
+        let categoryName = _name
+        let categoryLogo = _logo
+        let newCategory = Category(timestamp: Date(), id: UUID(), name: categoryName, logo: categoryLogo)
+        
+        modelContext.insert(newCategory)
+    }
+    
 }
 
 #Preview {
