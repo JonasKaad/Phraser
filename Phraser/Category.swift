@@ -9,13 +9,25 @@ import Foundation
 import SwiftData
 
 @Model
-final class Category: Identifiable {
-    var name: String
-    var phrases: [Phrase]?
+final class Category: ObservableObject, Identifiable {
+    var name: String {
+            didSet {
+                objectWillChange.send()
+            }
+        }
+    var phrases: [Phrase]? {
+            didSet {
+                objectWillChange.send()
+            }
+        }
     var id: UUID
-    var logo: String
+    var logo: String {
+        didSet {
+            objectWillChange.send()
+        }
+    }
     var timestamp: Date
-    
+
     init(timestamp: Date, id: UUID, name: String, logo: String) {
         self.timestamp = timestamp
         self.id = UUID()
