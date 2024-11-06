@@ -45,22 +45,46 @@ struct ContentView: View {
     }
     
     struct CategoryView: View {
-        var category: Category
+        @ObservedObject var category: Category
+        @Environment(\.modelContext) private var modelContext
+        
+        @State private var showDeleteConfirmation = false
+        
         var body: some View {
-            VStack(spacing: 10) {
-                Image(systemName: category.logo)
-                    .font(.system(size: 50))
-                    .foregroundColor(.blue)
-                .padding(8)
-                Text(category.name)
-                    .font(.title3)
-                    .fontWeight(.bold)
-                    .foregroundColor(.black)
+                VStack(spacing: 10) {
+                    Image(systemName: category.logo)
+                        .font(.system(size: 50))
+                        .foregroundColor(.blue)
+                        .padding(8)
+                    Text(category.name)
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .foregroundColor(.black)
+                }
+                .frame(maxWidth: 180, minHeight: 130)
+                .background(Color(UIColor.systemBackground))
+                .cornerRadius(10)
+                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
+                .contextMenu {
+                            Button(role: .destructive) {
+                                showDeleteConfirmation.toggle()
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                        .alert(isPresented: $showDeleteConfirmation) {
+                            Alert(
+                                title: Text("Delete Category"),
+                                message: Text("Are you sure you want to delete \(category.name)?"),
+                                primaryButton: .destructive(Text("Delete")) {
+                                    deleteCategory(category)
+                                },
+                                secondaryButton: .cancel()
+                            )
+                        }
             }
-            .frame(maxWidth: 180, minHeight: 130)
-            .background(Color(UIColor.systemBackground))
-            .cornerRadius(10)
-            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
+        private func deleteCategory(_ category: Category) {
+                modelContext.delete(category)
         }
     }
     
@@ -151,6 +175,9 @@ struct ContentView: View {
         let newCategory = Category(timestamp: Date(), id: UUID(), name: categoryName, logo: categoryLogo)
         
         modelContext.insert(newCategory)
+    }
+    private func deleteCategory(_ category: Category) {
+            modelContext.delete(category)
     }
     
 }
