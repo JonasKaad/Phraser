@@ -18,13 +18,15 @@ struct ContentView: View {
     @State private var isShowingAddSheet = false
 
     var body: some View {
+        NavigationView {
+
         VStack(alignment: .leading, spacing: 20) {
                     Text("Phrasebook")
                         .font(.largeTitle)
                         .bold()
                         .padding(.leading)
                         .safeAreaPadding(.top, 20)
-        ScrollView {
+            ScrollView {
             LazyVGrid(columns: columns, spacing: 20) {
                 ForEach(categories) { category in
                     CategoryView(category: category)
@@ -34,6 +36,7 @@ struct ContentView: View {
                     isShowingAddSheet.toggle()}) {
                     AddView()
                 }
+            }
             }
             
         }
@@ -47,10 +50,14 @@ struct ContentView: View {
     struct CategoryView: View {
         @ObservedObject var category: Category
         @Environment(\.modelContext) private var modelContext
+        @Environment(\.presentationMode) private var presentationMode
+
         
         @State private var showDeleteConfirmation = false
         
         var body: some View {
+            NavigationLink(destination: PhraseView(category: category)) {
+
                 VStack(spacing: 10) {
                     Image(systemName: category.logo)
                         .font(.system(size: 50))
@@ -82,6 +89,7 @@ struct ContentView: View {
                                 secondaryButton: .cancel()
                             )
                         }
+                    }
             }
         private func deleteCategory(_ category: Category) {
                 modelContext.delete(category)
