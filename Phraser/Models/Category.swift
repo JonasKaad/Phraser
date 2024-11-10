@@ -10,27 +10,29 @@ import SwiftData
 
 @Model
 final class Category: ObservableObject, Identifiable {
-    var name: String {
-            didSet {
-                objectWillChange.send()
-            }
-        }
-    var phrases: [Phrase]?{
-            didSet {
-                objectWillChange.send()
-            }
-        }
+    
     var id: UUID
+    var timestamp: Date
+    var name: String {
+        didSet {
+            objectWillChange.send()
+        }
+    }
     var logo: String {
         didSet {
             objectWillChange.send()
         }
     }
-    var timestamp: Date
+    
+    var phrases: [Phrase]?{
+        didSet {
+            objectWillChange.send()
+        }
+    }
 
-    init(timestamp: Date, id: UUID, name: String, logo: String, phrases: [Phrase]? = nil) {
-        self.timestamp = timestamp
+    init(id: UUID, timestamp: Date, name: String, logo: String, phrases: [Phrase]? = nil) {
         self.id = UUID()
+        self.timestamp = timestamp
         self.name = name
         self.logo = logo
         self.phrases = phrases

@@ -52,15 +52,16 @@ struct PhraseView: View {
             }
         }
         .sheet(isPresented: $isShowingAddSheet) {
-            CreateNewPhraseView(isPresented: $isShowingAddSheet.wrappedValue, createPhrase: createPhrase)
+            CreateNewPhraseView(isPresented: $isShowingAddSheet, createPhrase: createPhrase)
         }
+
     }
     
-    private func createPhrase(_text: String, _phoentic: String, _translation: String) {
+    private func createPhrase(_text: String, _phonetic: String, _translation: String) {
         let phraseText = _text
         let phraseTranslation = _translation
-        let phrasePhoentic = _phoentic
-        let newPhrase = Phrase(text:phraseText , id: UUID(), category:category , timestamp:Date() , phoentic:phrasePhoentic , translation: phraseTranslation)
+        let phrasePhonetic = _phonetic
+        let newPhrase = Phrase(id:  UUID() , timestamp:Date(), category:category , text: phraseText  , translation: phraseTranslation, phonetic: phrasePhonetic )
         
         modelContext.insert(newPhrase)
         
@@ -74,8 +75,8 @@ struct PhraseView: View {
 }
 
 #Preview {
-    let p = Phrase(text: "Hello", id: UUID(), category: Category(timestamp: Date(), id: UUID(), name: "Food", logo: "folder"), timestamp: Date(), phoentic: "annyonghaseyo", translation: "안녕하세요")
-    let p2 = Phrase(text: "Jonas", id: UUID(), category: Category(timestamp: Date(), id: UUID(), name: "Food", logo: "folder"), timestamp: Date(), phoentic: "jonaseu", translation: "조나스")
-    PhraseView(category: Category(timestamp: Date(), id: UUID(), name:"Food" , logo: "folder", phrases: [p,p2]))
+    let p = Phrase(id:UUID() , timestamp: Date(), category: Category(id: UUID(), timestamp: Date(), name: "Food", logo: "folder"), text: "Hello" , translation: "안녕하세요", phonetic: "annyonghaseyo")
+    let p2 = Phrase(id:  UUID(), timestamp: Date(), category: Category(id: UUID(), timestamp: Date(), name: "Food", logo: "folder"), text: "Jonas", translation: "조나스", phonetic: "jonaseu")
+    PhraseView(category: Category(id: UUID(), timestamp: Date(), name:"Food" , logo: "folder", phrases: [p,p2]))
         .modelContainer(for: [Category.self, Phrase.self], inMemory: true)
 }

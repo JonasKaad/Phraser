@@ -43,14 +43,14 @@ struct ContentView: View {
             .padding()
         }
         .sheet(isPresented: $isShowingAddSheet) {
-                    CreateNewCategoryView(isPresented: $isShowingAddSheet, createCategory: createCategory)
+            CreateNewCategoryView(isPresented: $isShowingAddSheet, createCategory: createCategory)
         }
     }
     
     private func createCategory(_name: String, _logo: String) {
         let categoryName = _name
         let categoryLogo = _logo
-        let newCategory = Category(timestamp: Date(), id: UUID(), name: categoryName, logo: categoryLogo)
+        let newCategory = Category(id: UUID(), timestamp: Date(), name: categoryName, logo: categoryLogo)
         
         modelContext.insert(newCategory)
     }

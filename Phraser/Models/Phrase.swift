@@ -11,15 +11,10 @@ import SwiftData
 
 @Model
 final class Phrase:  ObservableObject, Identifiable{
-    var text: String  {
-        didSet {
-            objectWillChange.send()
-        }
-    }
     var id: UUID
-    var category: Category
     var timestamp: Date
-    var phoentic: String  {
+    var category: Category
+    var text: String  {
         didSet {
             objectWillChange.send()
         }
@@ -29,13 +24,18 @@ final class Phrase:  ObservableObject, Identifiable{
             objectWillChange.send()
         }
     }
+    var phonetic: String  {
+        didSet {
+            objectWillChange.send()
+        }
+    }
     
-    init(text: String, id: UUID,  category: Category, timestamp: Date, phoentic: String, translation: String) {
-        self.text = text
+    init( id: UUID, timestamp: Date, category: Category, text: String, translation: String, phonetic: String) {
         self.id = UUID()
-        self.category = category
         self.timestamp = timestamp
-        self.phoentic = phoentic
+        self.category = category
+        self.text = text
         self.translation = translation
+        self.phonetic = phonetic
     }
 }
