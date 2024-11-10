@@ -13,8 +13,6 @@ struct PhraseView: View {
     @Environment(\.modelContext) private var modelContext
     @ObservedObject var category: Category
     @Query var phrases: [Phrase]
-
-    //let synthesizer = AVSpeechSynthesizer()
     @State private var isShowingAddSheet = false
 
     var body: some View {
