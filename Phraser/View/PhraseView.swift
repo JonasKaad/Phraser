@@ -35,6 +35,7 @@ struct PhraseView: View {
                         if let phrases = category.phrases, !phrases.isEmpty {
                             ForEach(phrases) { phrase in
                                 DisplayPhraseView(category: category, phrase: phrase)
+                                Spacer()
                             }
                         } else {
                             Text("No phrases for \(category.name)")

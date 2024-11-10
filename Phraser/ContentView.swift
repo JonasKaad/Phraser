@@ -19,11 +19,12 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
-            
             VStack(alignment: .leading, spacing: 20) {
                 ScrollView {
+                Spacer()
                 LazyVGrid(columns: columns, spacing: 20) {
                     // For each category stored in the database show a CategoryView
+                    
                     ForEach(categories) { category in
                         CategoryView(category: category)
                     }
