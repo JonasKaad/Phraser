@@ -14,7 +14,7 @@ struct PhraseView: View {
     @ObservedObject var category: Category
     @Query var phrases: [Phrase]
 
-    let synthesizer = AVSpeechSynthesizer()
+    //let synthesizer = AVSpeechSynthesizer()
     @State private var isShowingAddSheet = false
 
     var body: some View {
@@ -34,7 +34,7 @@ struct PhraseView: View {
                     ScrollView {
                         if let phrases = category.phrases, !phrases.isEmpty {
                             ForEach(phrases) { phrase in
-                                DisplayPhraseView(category: category, phrase: phrase, synthesizer: synthesizer)
+                                DisplayPhraseView(category: category, phrase: phrase)
                             }
                         } else {
                             Text("No phrases for \(category.name)")

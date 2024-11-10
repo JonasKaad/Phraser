@@ -12,7 +12,6 @@ import AVFoundation
 struct DisplayPhraseView: View {
     @ObservedObject var category: Category
     @ObservedObject var phrase: Phrase
-    var synthesizer: AVSpeechSynthesizer
     @Environment(\.modelContext) private var modelContext
     @Environment(\.presentationMode) private var presentationMode
     @State private var showDeleteConfirmation = false
@@ -37,14 +36,15 @@ struct DisplayPhraseView: View {
                         let pasteboard = UIPasteboard.general
                         pasteboard.string = phrase.translation
                     }
+                
                 Image(systemName: "play.circle.fill")
                     .font(.system(size: 30))
                     .foregroundColor(.blue)
                     .onTapGesture {
                         let utterance = AVSpeechUtterance(string: phrase.translation)
-                        utterance.voice = AVSpeechSynthesisVoice(language: "ko-KR")
-                        synthesizer.speak(utterance)
-                    }
+                                utterance.voice = AVSpeechSynthesisVoice(language: "ko-KR")
+                                SpeechSynthesizerManager.shared.speak(utterance)
+                        }
             }
             Text(phrase.phoentic)
                 .font(.title3)
