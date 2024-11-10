@@ -28,13 +28,15 @@ struct ContentView: View {
                         .safeAreaPadding(.top, 20)
             ScrollView {
             LazyVGrid(columns: columns, spacing: 20) {
+                // For each category stored in the database show a CategoryView
                 ForEach(categories) { category in
                     CategoryView(category: category)
                 }
                 // Add button
                 Button(action: {
+                    // If creating a new category is not currently being shown
                     isShowingAddSheet.toggle()}) {
-                    AddView()
+                        // Show the Add new catgory button
                         CategoryAddView()
                 }
             }
