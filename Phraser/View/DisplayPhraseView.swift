@@ -54,10 +54,10 @@ struct DisplayPhraseView: View {
         .frame(maxWidth: .infinity, minHeight: 120, alignment: .leading)
         .padding(18)
         .background(Color(UIColor.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 20)) // Clip the content to the rounded shape
+        .clipShape(RoundedRectangle(cornerRadius: 30)) // Clip the content to the rounded shape
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.blue, lineWidth: 1) // Creates a rounded blue border
+            RoundedRectangle(cornerRadius: 30)
+                .stroke(Color.blue, lineWidth: 1.8) // Creates a rounded blue border
         )
         .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
         .padding(.horizontal, 10)
