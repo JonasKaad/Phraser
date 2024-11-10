@@ -20,7 +20,7 @@ struct DisplayPhraseView: View {
         Spacer()
         VStack(alignment: .leading, spacing: 10) {
             Text(phrase.text)
-                .font(.title2)
+                .font(.system(size: 20))
                 .fontWeight(.bold)
                 .foregroundColor(.black)
             HStack {
@@ -47,7 +47,7 @@ struct DisplayPhraseView: View {
                         }
             }
             Text(phrase.phonetic)
-                .font(.title2)
+                .font(.system(size: 18))
                 .fontWeight(.bold)
                 .foregroundColor(.gray)
         }
