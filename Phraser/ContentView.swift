@@ -19,35 +19,31 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
-
-        VStack(alignment: .leading, spacing: 20) {
-                    Text("Phrasebook")
-                        .font(.largeTitle)
-                        .bold()
-                        .padding(.leading)
-                        .safeAreaPadding(.top, 20)
-            ScrollView {
-            LazyVGrid(columns: columns, spacing: 20) {
-                // For each category stored in the database show a CategoryView
-                ForEach(categories) { category in
-                    CategoryView(category: category)
-                }
-                // Add button
-                Button(action: {
-                    // If creating a new category is not currently being shown
-                    isShowingAddSheet.toggle()}) {
-                        // Show the Add new catgory button
-                        CategoryAddView()
-                }
-            }
-            }
             
-        }
-        .padding()
+            VStack(alignment: .leading, spacing: 20) {
+                ScrollView {
+                LazyVGrid(columns: columns, spacing: 20) {
+                    // For each category stored in the database show a CategoryView
+                    ForEach(categories) { category in
+                        CategoryView(category: category)
+                    }
+                    // Add button
+                    Button(action: {
+                        // If creating a new category is not currently being shown
+                        isShowingAddSheet.toggle()}) {
+                            // Show the Add new catgory button
+                            CategoryAddView()
+                    }
+                }
+                }
+                
+            }
+            .navigationTitle("Phrasebook")
+            .padding()
         }
         .sheet(isPresented: $isShowingAddSheet) {
                     CreateNewCategoryView(isPresented: $isShowingAddSheet, createCategory: createCategory)
-                }
+        }
     }
     
     private func createCategory(_name: String, _logo: String) {
