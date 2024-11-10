@@ -16,6 +16,7 @@ struct CreateNewPhraseView: View {
     let createPhrase: (String, String, String) -> Void
     @State private var configuration = TranslationSession.Configuration(source: .init(identifier: "en-US"), target: .init(identifier: "ko-kr"))
     @State var text: String = ""
+    @State private var becomeFirstResponder = true
     @State var phonetic: String = ""
     @State var translation: String = ""
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 6)
@@ -23,20 +24,16 @@ struct CreateNewPhraseView: View {
     var body: some View {
             Form {
                 Section() {
-                    TextField("Phrase", text: $text)
+                    TextField("Enter Phrase", text: $text)
+                        .frame(height: 30)
+                        .padding()
+                        .font(.system(size: 24))
                         .introspect(.textField, on: .iOS(.v13, .v14, .v15, .v16, .v17, .v18)) { textField in
-                                if self.becomeFirstResponder {
-                                    textField.becomeFirstResponder()
-                                    self.becomeFirstResponder = false
-                                }
+                            if self.becomeFirstResponder {
+                                textField.becomeFirstResponder()
+                                self.becomeFirstResponder = false
                             }
-//                        .translationTask(configuration) {
-//                            var request: <# Type #> { TranslationSession.Request(sourceText: $text, clientIdentifier: id.uuidString) }
-//                            
-//                            if let response = try? await session.translations(from: request) {
-//                                
-//                            }
-//                        }
+                        }
                 }
                 VStack {
                     Text(text)
