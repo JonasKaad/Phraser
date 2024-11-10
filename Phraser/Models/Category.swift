@@ -15,7 +15,7 @@ final class Category: ObservableObject, Identifiable {
                 objectWillChange.send()
             }
         }
-    var phrases: [Phrase]? {
+    var phrases: [Phrase]?{
             didSet {
                 objectWillChange.send()
             }
@@ -28,10 +28,11 @@ final class Category: ObservableObject, Identifiable {
     }
     var timestamp: Date
 
-    init(timestamp: Date, id: UUID, name: String, logo: String) {
+    init(timestamp: Date, id: UUID, name: String, logo: String, phrases: [Phrase]? = nil) {
         self.timestamp = timestamp
         self.id = UUID()
         self.name = name
         self.logo = logo
+        self.phrases = phrases
     }
 }

@@ -10,13 +10,25 @@ import Foundation
 import SwiftData
 
 @Model
-final class Phrase{
-    var text: String
+final class Phrase:  ObservableObject, Identifiable{
+    var text: String  {
+        didSet {
+            objectWillChange.send()
+        }
+    }
     var id: UUID
     var category: Category
     var timestamp: Date
-    var phoentic: String
-    var translation: String
+    var phoentic: String  {
+        didSet {
+            objectWillChange.send()
+        }
+    }
+    var translation: String  {
+        didSet {
+            objectWillChange.send()
+        }
+    }
     
     init(text: String, id: UUID,  category: Category, timestamp: Date, phoentic: String, translation: String) {
         self.text = text
