@@ -31,11 +31,11 @@ struct CreateNewCategoryView: View {
                 .padding()
                 .font(.system(size: 24))
                 .introspect(.textField, on: .iOS(.v13, .v14, .v15, .v16, .v17, .v18)) { textField in
-                                if self.becomeFirstResponder {
-                                    textField.becomeFirstResponder()
-                                    self.becomeFirstResponder = false
-                                }
-                            }
+                        if self.becomeFirstResponder {
+                            textField.becomeFirstResponder()
+                            self.becomeFirstResponder = false
+                        }
+                    }
            
 
             Section("icon") {

@@ -7,37 +7,67 @@
 
 import SwiftUI
 import SwiftData
+import Translation
+import SwiftUIIntrospect
+
 
 struct CreateNewPhraseView: View {
-    @State var isPresented: Bool
+    @Binding var isPresented: Bool
     let createPhrase: (String, String, String) -> Void
-    
+    @State private var configuration = TranslationSession.Configuration(source: .init(identifier: "en-US"), target: .init(identifier: "ko-kr"))
     @State var text: String = ""
-    @State var phonetic: String = "annyonghaseyo"
-    @State var translation: String = "안녕하세요"
+    @State var phonetic: String = ""
+    @State var translation: String = ""
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 6)
+    
     var body: some View {
             Form {
-                TextField("Enter a phrase", text: $text)
-                .frame(height: 40)
-                .font(.system(size: 24))
-                
-
-                Button("Add Phrase") {
-                    createPhrase(text, phonetic, translation)
-                    isPresented = false
+                Section() {
+                    TextField("Phrase", text: $text)
+                        .introspect(.textField, on: .iOS(.v13, .v14, .v15, .v16, .v17, .v18)) { textField in
+                                if self.becomeFirstResponder {
+                                    textField.becomeFirstResponder()
+                                    self.becomeFirstResponder = false
+                                }
+                            }
+//                        .translationTask(configuration) {
+//                            var request: <# Type #> { TranslationSession.Request(sourceText: $text, clientIdentifier: id.uuidString) }
+//                            
+//                            if let response = try? await session.translations(from: request) {
+//                                
+//                            }
+//                        }
                 }
-                .disabled(text.isEmpty)
-                .frame(maxWidth: .infinity)
-                .font(.title2)
-                .padding()
-                .foregroundColor(.white)
+                VStack {
+                    Text(text)
+                        .frame(height: 40)
+                        .font(.system(size: 24))
+                    Text(phonetic)
+                        .frame(height: 40)
+                        .font(.system(size: 24))
+                }
                 
-                .background(text.isEmpty ? Color.gray : Color.blue)
-                .listRowBackground(text.isEmpty ? Color.gray:Color.blue)
-            
-                .cornerRadius(8)
+                Section() {
+                    Button("Add Phrase") {
+                        createPhrase(text, phonetic, translation)
+                        isPresented = false
+                    }
+                    .disabled(text.isEmpty)
+                    .frame(maxWidth: .infinity)
+                    .font(.title2)
+                    .padding()
+                    .foregroundColor(.white)
+                    
+                    .background(text.isEmpty ? Color.gray : Color.blue)
+                    .listRowBackground(text.isEmpty ? Color.gray:Color.blue)
+                
+                    .cornerRadius(8)
+                }
             }
         }
     
+}
+#Preview {
+    @Previewable @State  var isPresented = true
+    CreateNewPhraseView(isPresented: $isPresented, createPhrase: {_,_,_ in })
 }
