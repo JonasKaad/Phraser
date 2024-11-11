@@ -19,20 +19,24 @@ struct PhraseView: View {
     var body: some View {
         NavigationView {
             VStack {
-                HStack(spacing: 10) {
-                    Image(systemName: category.logo)
-                        .font(.system(size: 30))
-                        .foregroundColor(.blue)
-                        .padding(8)
-                    Text(category.name)
-                        .font(.callout)
-                        .fontWeight(.bold)
-                        .foregroundColor(.black)
+                if let phrases = category.phrases, !phrases.isEmpty {
+                    TextField("Search phrases", text: $searchText)
+                        .padding(14)
+                        .background(Color(UIColor.systemBackground))
+                        .cornerRadius(30)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 30)
+                                .stroke(Color.blue, lineWidth: 1.8)
+                        )
+                        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 5) // Drop shadow for depth
+                        .padding(.horizontal, 20) // 12 padding for same dimensions
+                        .font(.system(size: 20))
                 }
+                
                 VStack(alignment: .leading, spacing: 20) {
                     ScrollView {
                         if let phrases = category.phrases, !phrases.isEmpty {
-                            ForEach(phrases) { phrase in
+                            ForEach(filteredPhrases) { phrase in
                                 DisplayPhraseView(category: category, phrase: phrase)
                                 Spacer()
                             }
