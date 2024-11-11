@@ -44,6 +44,7 @@ struct ContentView: View {
         }
         .sheet(isPresented: $isShowingAddSheet) {
             CreateNewCategoryView(isPresented: $isShowingAddSheet, createCategory: createCategory)
+                //.presentationDetents([.fraction(0.60)])
         }
     }
     

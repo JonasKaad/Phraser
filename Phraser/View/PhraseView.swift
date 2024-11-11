@@ -51,7 +51,7 @@ struct PhraseView: View {
         }
         .sheet(isPresented: $isShowingAddSheet) {
             CreateNewPhraseView(isPresented: $isShowingAddSheet, createPhrase: createPhrase)
-        }
+                //.presentationDetents([.fraction(0.60)])
 
     }
     
