@@ -40,15 +40,35 @@ struct PhraseView: View {
                             Text("No phrases for \(category.name)")
                             Text("Add some phrases!")
                         }
-                            
-                            Button(action: {
-                                isShowingAddSheet.toggle()}) {
-                                    CategoryAddView()
-                                }
-                                .padding()
                     }
                 }
             }
+        }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        isShowingAddSheet.toggle()}) {
+                            Image(systemName: "plus")
+                                .font(.system(size: 16))
+                                .bold()
+                                .foregroundColor(.white)
+                                // different vertical and horizontal padding
+                                .padding(.vertical, 4)
+                                .padding(.horizontal, 8)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .fill(Color.blue) // Set blue color within the rounded rectangle shape
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .stroke(Color.blue, lineWidth: 1.5)
+                                )
+                                
+                        }
+                        .padding()
+                }
+                //}
+        
         }
         .sheet(isPresented: $isShowingAddSheet) {
             CreateNewPhraseView(isPresented: $isShowingAddSheet, createPhrase: createPhrase)
