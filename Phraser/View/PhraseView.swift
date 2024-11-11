@@ -14,6 +14,7 @@ struct PhraseView: View {
     @ObservedObject var category: Category
     @Query var phrases: [Phrase]
     @State private var isShowingAddSheet = false
+    @State private var searchText = ""
 
     var body: some View {
         NavigationView {
@@ -52,8 +53,20 @@ struct PhraseView: View {
         .sheet(isPresented: $isShowingAddSheet) {
             CreateNewPhraseView(isPresented: $isShowingAddSheet, createPhrase: createPhrase)
                 //.presentationDetents([.fraction(0.60)])
+        }
 
     }
+    private var filteredPhrases: [Phrase] {
+            if searchText.isEmpty {
+                return category.phrases ?? []
+            } else {
+                return category.phrases?.filter {
+                    $0.text.localizedCaseInsensitiveContains(searchText) ||
+                    $0.translation.localizedCaseInsensitiveContains(searchText) ||
+                    $0.phonetic.localizedCaseInsensitiveContains(searchText)
+                } ?? []
+            }
+        }
     
     private func createPhrase(_text: String, _phonetic: String, _translation: String) {
         let phraseText = _text
