@@ -41,8 +41,25 @@ struct PhraseView: View {
                                 Spacer()
                             }
                         } else {
-                            Text("No phrases for \(category.name)")
-                            Text("Add some phrases!")
+                            Spacer()
+                            Spacer()
+                            
+                            HStack(spacing: 6) {
+                                Text("No phrases found in")
+                                    .font(.title)
+                                Image(systemName: category.logo)
+                                    .font(.system(size: 40))
+                                    .foregroundColor(.blue)
+                                    .padding(2)
+                                Text(category.name)
+                                    .font(.title)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.black)
+                            }
+                            Text("Add some phrases to get started!")
+                                .font(.title2)
+                                .foregroundColor(.blue)
+                            Spacer()
                         }
                     }
                 }
