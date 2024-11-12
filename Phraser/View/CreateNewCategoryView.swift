@@ -27,8 +27,8 @@ struct CreateNewCategoryView: View {
         
         Form {
             TextField("Category Name", text: $newCategoryName)
-                .frame(height: 40)
-                .padding()
+                .frame(height: 30)
+                .padding(.vertical)
                 .font(.system(size: 24))
                 .introspect(.textField, on: .iOS(.v13, .v14, .v15, .v16, .v17, .v18)) { textField in
                         if self.becomeFirstResponder {
@@ -69,6 +69,7 @@ struct CreateNewCategoryView: View {
                 createCategory(newCategoryName, selectedIcon)
                 isPresented = false
             }
+            .frame(maxWidth: .infinity, maxHeight: 5)
             .disabled(newCategoryName.isEmpty)
             .frame(maxWidth: .infinity)
             .font(.title2)
