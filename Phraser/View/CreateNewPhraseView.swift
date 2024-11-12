@@ -42,11 +42,6 @@ struct CreateNewPhraseView: View {
                         .onChange(of: text, {
                             translateText()
                         })
-//                        .onChange(of: text) { newText in
-//                            translateText()
-//                            
-//                        
-//                        }
                 }
                 Section() {
                     

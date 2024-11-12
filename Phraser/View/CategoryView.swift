@@ -11,14 +11,11 @@ import SwiftData
 struct CategoryView: View {
     @ObservedObject var category: Category
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.presentationMode) private var presentationMode
-
-    
+    @Environment(\.presentationMode) private var presentationMode    
     @State private var showDeleteConfirmation = false
     
     var body: some View {
         NavigationLink(destination: PhraseView(category: category)) {
-
             VStack(spacing: 10) {
                 Image(systemName: category.logo)
                     .font(.system(size: 50))
@@ -34,24 +31,25 @@ struct CategoryView: View {
             .cornerRadius(10)
             .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
             .contextMenu {
-                        Button(role: .destructive) {
-                            showDeleteConfirmation.toggle()
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-                    .alert(isPresented: $showDeleteConfirmation) {
-                        Alert(
-                            title: Text("Delete Category"),
-                            message: Text("Are you sure you want to delete \(category.name)?"),
-                            primaryButton: .destructive(Text("Delete")) {
-                                deleteCategory(category)
-                            },
-                            secondaryButton: .cancel()
-                        )
-                    }
+                Button(role: .destructive) {
+                    showDeleteConfirmation.toggle()
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            }
+                .alert(isPresented: $showDeleteConfirmation) {
+                    Alert(
+                        title: Text("Delete Category"),
+                        message: Text("Are you sure you want to delete \(category.name)?"),
+                        primaryButton: .destructive(Text("Delete")) {
+                            deleteCategory(category)
+                        },
+                        secondaryButton: .cancel()
+                    )
                 }
         }
+    }
+    
     private func deleteCategory(_ category: Category) {
             modelContext.delete(category)
     }
