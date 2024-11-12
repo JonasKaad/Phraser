@@ -16,10 +16,14 @@ struct CreateNewPhraseView: View {
     @Binding var isPresented: Bool
     let createPhrase: (String, String, String) -> Void
     @State private var configuration = TranslationSession.Configuration(source: .init(identifier: "en-US"), target: .init(identifier: "ko-kr"))
-    @State var text: String = "nachos"
+    @State var text: String = ""
     @State private var becomeFirstResponder = true
-    @State var translation: String = "나촛"
-    @State var phonetic: String = "na-chos"
+    @State var translation: String = ""
+    @State var phonetic: String = ""
+    let translator = AzureTranslator()
+    @State private var isLoading: Bool = false  // Loading state for spinner
+    @State private var errorMessage: String?
+
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 6)
     
     var body: some View {
@@ -35,6 +39,14 @@ struct CreateNewPhraseView: View {
                                 self.becomeFirstResponder = false
                             }
                         }
+                        .onChange(of: text, {
+                            translateText()
+                        })
+//                        .onChange(of: text) { newText in
+//                            translateText()
+//                            
+//                        
+//                        }
                 }
                 Section() {
                     
@@ -42,26 +54,40 @@ struct CreateNewPhraseView: View {
                         Text(text)
                             .frame(height: 40)
                             .font(.system(size: 20))
-                        HStack {
-                            Text(translation)
-                                .frame(height: 40)
-                                .font(.largeTitle)
-                                .bold()
-                            Spacer()
-                            Image(systemName: "play.circle.fill")
-                                .font(.system(size: 30))
-                                .foregroundColor(.blue)
-                                .onTapGesture {
-                                    let utterance = AVSpeechUtterance(string: translation)
+                        if isLoading {
+                       ProgressView()
+                           .progressViewStyle(CircularProgressViewStyle())
+                           .padding(.top, 10)
+                           .font(.largeTitle)
+                   } else if let errorMessage = errorMessage {
+                       Text("Error: \(errorMessage)")
+                           .foregroundColor(.red)
+                           .padding(.top, 10)
+                   }else {
+                            HStack {
+                                Text(translation)
+                                    .frame(height: 40)
+                                    .font(.largeTitle)
+                                    .bold()
+                                Spacer()
+                                if !translation.isEmpty {
+                                    Image(systemName: "play.circle.fill")
+                                        .font(.system(size: 30))
+                                        .foregroundColor(.blue)
+                                        .onTapGesture {
+                                            let utterance = AVSpeechUtterance(string: translation)
                                             utterance.voice = AVSpeechSynthesisVoice(language: "ko-KR")
                                             SpeechSynthesizerManager.shared.speak(utterance)
+                                        }
                                     }
+                            }
+                            Text(phonetic)
+                                .frame(height: 40)
+                                .font(.system(size: 18))
+                                .foregroundColor(.gray)
                         }
-                        Text(phonetic)
-                            .frame(height: 40)
-                            .font(.system(size: 18))
-                            .foregroundColor(.gray)
                     }
+                    
                 }
                 .frame(maxWidth: .infinity, minHeight: 120, alignment: .leading)
                 .listRowBackground(Color.teal.opacity(0.2))
@@ -84,6 +110,30 @@ struct CreateNewPhraseView: View {
                 
                     .cornerRadius(8)
                 }
+            }
+        }
+        private func translateText() {
+            isLoading = true
+            errorMessage = nil
+
+            
+            translator?.translate(text: text, to: "ko") { translatedText, transliteration, error in
+                    DispatchQueue.main.async {
+                        isLoading = false  // End loading
+                        
+                        if let error = error as NSError? {
+                            print("Error Translating: \(error)")
+                            if error.domain == NSURLErrorDomain, error.code == NSURLErrorNotConnectedToInternet {
+                                self.errorMessage = "No internet connection. Please check your network settings."
+                            } else {
+                                self.errorMessage = "An error occurred: \(error.localizedDescription)"
+                            }
+                            return
+                        }
+                        
+                        self.translation = translatedText ?? ""
+                        self.phonetic = transliteration ?? ""
+                    }
             }
         }
     
