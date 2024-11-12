@@ -61,7 +61,29 @@ struct DisplayPhraseView: View {
         )
         .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
         .padding(.horizontal, 10)
+        .contextMenu {
+            Button(role: .destructive) {
+                showDeleteConfirmation.toggle()
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
+            .alert(isPresented: $showDeleteConfirmation) {
+                Alert(
+                    title: Text("Delete Phrase"),
+                    message: Text("Are you sure you want to delete phrase: \(phrase.text)?"),
+                    primaryButton: .destructive(Text("Delete")) {
+                        deletePhrase(phrase)
+                    },
+                    secondaryButton: .cancel()
+                )
+            }
     }
+    private func deletePhrase(_ phrase: Phrase) {
+        modelContext.delete(phrase)
+        category.phrases?.removeAll(where: { $0.id == phrase.id })
+    }
+    
 }
 
 
