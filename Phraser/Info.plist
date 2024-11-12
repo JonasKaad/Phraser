@@ -6,5 +6,9 @@
 	<string></string>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
+	<key>AZURE_TRANSLATOR_API_KEY</key>
+	<string>$(AZURE_TRANSLATOR_API_KEY)</string>
+	<key>AZURE_TRANSLATOR_REGION</key>
+	<string>$(AZURE_TRANSLATOR_REGION)</string>
 </dict>
 </plist>
