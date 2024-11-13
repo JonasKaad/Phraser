@@ -71,7 +71,7 @@ struct DisplayPhraseView: View {
             .alert(isPresented: $showDeleteConfirmation) {
                 Alert(
                     title: Text("Delete Phrase"),
-                    message: Text("Are you sure you want to delete phrase: \(phrase.text)?"),
+                    message: Text("Are you sure you want to delete phrase: \(phrase.text)"),
                     primaryButton: .destructive(Text("Delete")) {
                         deletePhrase(phrase)
                     },
@@ -90,6 +90,6 @@ struct DisplayPhraseView: View {
 #Preview {
     let p = Phrase(id:UUID() , timestamp: Date(), category: Category(id: UUID(), timestamp: Date(), name: "Food", logo: "folder"), text: "Hello" , translation: "안녕하세요", phonetic: "annyonghaseyo")
     let p2 = Phrase(id:  UUID(), timestamp: Date(), category: Category(id: UUID(), timestamp: Date(), name: "Food", logo: "folder"), text: "Jonas", translation: "조나스", phonetic: "jonaseu")
-    PhraseView(category: Category(id: UUID(), timestamp: Date(), name:"Food" , logo: "folder", phrases: [p,p2]))
+    PhraseView(category: Category(id: UUID(), timestamp: Date(), name:"transportation" , logo: "folder", phrases: [p,p2]))
         .modelContainer(for: [Category.self, Phrase.self], inMemory: true)
 }

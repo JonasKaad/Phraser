@@ -41,12 +41,11 @@ struct PhraseView: View {
                                 Spacer()
                             }
                         } else {
-                            Spacer()
-                            Spacer()
-                            
-                            HStack(spacing: 6) {
+                            Spacer(minLength: 60)
+                            VStack {
                                 Text("No phrases found in")
                                     .font(.title)
+                            HStack(spacing: 4) {
                                 Image(systemName: category.logo)
                                     .font(.system(size: 40))
                                     .foregroundColor(.blue)
@@ -56,6 +55,8 @@ struct PhraseView: View {
                                     .fontWeight(.semibold)
                                     .foregroundColor(.black)
                             }
+                            }
+                            Spacer(minLength: 40)
                             Text("Add some phrases to get started!")
                                 .font(.title2)
                                 .foregroundColor(.blue)
@@ -76,14 +77,7 @@ struct PhraseView: View {
                                 // different vertical and horizontal padding
                                 .padding(.vertical, 4)
                                 .padding(.horizontal, 8)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 14)
-                                        .fill(Color.blue) // Set blue color within the rounded rectangle shape
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 14)
-                                        .stroke(Color.blue, lineWidth: 1.5)
-                                )
+                                .roundedBlueCorners()
                                 
                         }
                         .padding()
@@ -128,7 +122,7 @@ struct PhraseView: View {
 
 #Preview {
     let p = Phrase(id:UUID() , timestamp: Date(), category: Category(id: UUID(), timestamp: Date(), name: "Food", logo: "folder"), text: "Hello" , translation: "안녕하세요", phonetic: "annyonghaseyo")
-    let p2 = Phrase(id:  UUID(), timestamp: Date(), category: Category(id: UUID(), timestamp: Date(), name: "Food", logo: "folder"), text: "Jonas", translation: "조나스", phonetic: "jonaseu")
-    PhraseView(category: Category(id: UUID(), timestamp: Date(), name:"Food" , logo: "folder", phrases: [p,p2]))
+    let p2 = Phrase(id:  UUID(), timestamp: Date(), category: Category(id: UUID(), timestamp: Date(), name: "food", logo: "folder"), text: "Jonas", translation: "조나스", phonetic: "jonaseu")
+    PhraseView(category: Category(id: UUID(), timestamp: Date(), name:"Transportation" , logo: "folder", phrases: [p,p2]))
         .modelContainer(for: [Category.self, Phrase.self], inMemory: true)
 }
