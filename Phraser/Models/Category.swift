@@ -23,7 +23,7 @@ final class Category: ObservableObject, Identifiable {
             objectWillChange.send()
         }
     }
-    
+    @Relationship(deleteRule: .cascade, inverse: \Phrase.category)
     var phrases: [Phrase]?{
         didSet {
             objectWillChange.send()
