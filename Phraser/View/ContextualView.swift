@@ -68,3 +68,7 @@ struct ContextualPhraseView: View {
         }
     }
 }
+#Preview{
+    let phrases = ["Good evening!", "How was your day?"];
+    ContextualPhraseView(phrases: phrases)
+}
