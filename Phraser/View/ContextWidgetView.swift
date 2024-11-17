@@ -18,7 +18,7 @@ struct ContextWidgetView: View {
                     Image(systemName: "location")
                         .font(.system(size: 32))
                         .foregroundColor(.green)
-                    Text(locationManager.address)
+                    Text(locationManager.currentPlace)
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.black)
