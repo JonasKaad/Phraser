@@ -10,5 +10,9 @@
 	<string>$(AZURE_TRANSLATOR_API_KEY)</string>
 	<key>AZURE_TRANSLATOR_REGION</key>
 	<string>$(AZURE_TRANSLATOR_REGION)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We use your location to display your current address.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need access to your location to show your current address.</string>
 </dict>
 </plist>
