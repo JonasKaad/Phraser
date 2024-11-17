@@ -26,9 +26,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else { return }
+        print("Locations found: \(locations)")
+        guard let location = locations.last
+        else {
+            return
+        }
         // Check if the new location is significantly different from the last location
-       if let lastLocation = lastLocation,
+        if let lastLocation = lastLocation,
           location.distance(from: lastLocation) < 20 { // Only update if moved > 20 meters
            return
        }
@@ -36,6 +40,10 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
        lastLocation = location
        currentLocation = location
        fetchAddress(from: location)
+        print("Location update: \(location)")
+        print("Address update: \(address)")
+        print("Current Location: \(String(describing: currentLocation))")
+        print("Lastlocation update: \(String(describing: lastLocation))")
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
