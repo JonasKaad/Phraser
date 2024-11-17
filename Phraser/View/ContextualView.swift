@@ -52,7 +52,7 @@ struct ContextualPhraseView: View {
     var body: some View {
         NavigationView {
             VStack {
-                ContextView()
+                ContextWidgetView()
                 
                 VStack(alignment: .leading, spacing: 20) {
                     ScrollView {
