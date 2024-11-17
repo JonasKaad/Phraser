@@ -10,25 +10,47 @@ import SwiftUI
 
 struct RoundCorner: ViewModifier {
     var color: Color
+    var lineWidth: CGFloat
+    var cornerRadius: CGFloat
     func body(content: Content) -> some View {
         content
             .background(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: cornerRadius)
                     .fill(color)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(color, lineWidth: 1.8)
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .stroke(color, lineWidth: lineWidth)
+            )
+    }
+}
+
+struct RoundCornerWithoutBG: ViewModifier {
+    var color: Color
+    var lineWidth: CGFloat
+    var cornerRadius: CGFloat
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .stroke(color, lineWidth: lineWidth)
             )
     }
 }
 
 extension View {
-    func roundedCustomColorCorners(with color: Color) -> some View {
-        modifier(RoundCorner(color: color))
-    }
-    
-    func roundedBlueCorners() -> some View {
-        modifier(RoundCorner(color: Color.blue))
-    }
+    func roundedCorners(
+            color: Color = .blue,
+            lineWidth: CGFloat = 1.6,
+            cornerRadius: CGFloat = 14
+        ) -> some View {
+            modifier(RoundCorner(color: color, lineWidth: lineWidth, cornerRadius: cornerRadius))
+        }
+    func roundedCornersWithoutBG(
+            color: Color = .blue,
+            lineWidth: CGFloat = 1.6,
+            cornerRadius: CGFloat = 14
+        ) -> some View {
+            modifier(RoundCornerWithoutBG(color: color, lineWidth: lineWidth, cornerRadius: cornerRadius))
+        }
 }
