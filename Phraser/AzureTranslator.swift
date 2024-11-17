@@ -28,6 +28,7 @@ struct TranslationResult: Codable {
 }
 
 class AzureTranslator {
+    static let shared = AzureTranslator()
 
     private let endpoint = "https://api.cognitive.microsofttranslator.com/translate"
     private let apiKey: String

@@ -16,7 +16,7 @@ struct ContextualPhraseDisplayView: View {
     @State private var isLoading: Bool = true
     @State private var errorMessage: String?
     
-    let translator = AzureTranslator()
+    let translator = AzureTranslator.shared
 
     var body: some View {
         

@@ -20,7 +20,7 @@ struct CreateNewPhraseView: View {
     @State private var becomeFirstResponder = true
     @State var translation: String = ""
     @State var phonetic: String = ""
-    let translator = AzureTranslator()
+    let translator = AzureTranslator.shared
     @State private var isLoading: Bool = false  // Loading state for spinner
     @State private var errorMessage: String?
 
