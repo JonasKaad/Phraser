@@ -80,8 +80,12 @@ struct DisplayPhraseView: View {
             }
     }
     private func deletePhrase(_ phrase: Phrase) {
+        print("Before deletion: \(String(describing: category.phrases))")
         modelContext.delete(phrase)
-        category.phrases?.removeAll(where: { $0.id == phrase.id })
+        if let index = category.phrases?.firstIndex(where: { $0.id == phrase.id }) {
+            category.phrases?.remove(at: index)
+        }
+        print("After deletion: \(String(describing: category.phrases))")
     }
     
 }
