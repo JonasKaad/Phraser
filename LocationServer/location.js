@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8080;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -18,8 +18,37 @@ const PLACE_CATEGORIES = [
     'HP8', // Hospital
     'PM9'  // Pharmacy
 ];
+// Custom locations
+const CUSTOM_LOCATIONS = [
+    {
+        name: "포항공과대학교 생활관 16동",
+        coordinates: { lat: 36.017140, lng: 129.322108 },
+        category: "학교 > 기숙사"
+    },
+    {
+        name: "포항공과대학교 제2공학관",
+        coordinates: { lat: 36.012430, lng: 129.321970 },
+        category: "학교 > 공학관"
+    }
+];
 
-app.post('/api/location', async (req, res) => {
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // Earth's radius in meters
+    const length1 = lat1 * Math.PI / 180;
+    const length2 = lat2 * Math.PI / 180;
+    const distance1 = (lat2 - lat1) * Math.PI / 180;
+    const distance2 = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(distance1/2) * Math.sin(distance1/2) +
+            Math.cos(length1) * Math.cos(length2) *
+            Math.sin(distance2/2) * Math.sin(distance2/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    return R * c;
+}
+
+
+app.post('/geocode', async (req, res) => {
     try {
         const { latitude, longitude } = req.body;
 
@@ -29,7 +58,35 @@ app.post('/api/location', async (req, res) => {
             });
         }
 
-        // Get nearby places
+        // Check custom locations first
+        const customLocationDistances = CUSTOM_LOCATIONS.map(location => ({
+            ...location,
+            distance: Math.round(calculateDistance(
+                latitude,
+                longitude,
+                location.coordinates.lat,
+                location.coordinates.lng
+            ))
+        }));
+
+        const nearestCustomLocation = customLocationDistances
+            .filter(loc => loc.distance <= PLACE_DETECTION_RADIUS)
+            .sort((a, b) => a.distance - b.distance)[0];
+
+        // If we're within range of a custom location, return it
+        if (nearestCustomLocation) {
+            return res.json({
+                isInPlace: true,
+                place: {
+                    name: nearestCustomLocation.name,
+                    category: nearestCustomLocation.category,
+                    distance: nearestCustomLocation.distance,
+                    isCustomLocation: true
+                }
+            });
+        }
+
+        // If no custom location found, check Kakao API
         const placesResponse = await axios.get('https://dapi.kakao.com/v2/local/search/category.json', {
             params: {
                 category_group_code: PLACE_CATEGORIES.join(','),
@@ -43,11 +100,9 @@ app.post('/api/location', async (req, res) => {
             }
         });
 
-        // Find the nearest place within the radius
         const nearestPlace = placesResponse.data.documents[0];
 
         if (nearestPlace && parseInt(nearestPlace.distance) <= PLACE_DETECTION_RADIUS) {
-            // Return only the relevant place information
             return res.json({
                 isInPlace: true,
                 place: {
@@ -55,15 +110,20 @@ app.post('/api/location', async (req, res) => {
                     category: nearestPlace.category_name,
                     distance: parseInt(nearestPlace.distance),
                     address: nearestPlace.address_name,
-                    phone: nearestPlace.phone
+                    phone: nearestPlace.phone,
+                    isCustomLocation: false
                 }
             });
         }
 
-        // If no place is found within radius
+        // If no place is found within radius, return nearest custom location for debugging
         res.json({
             isInPlace: false,
-            message: "Not currently in any detected place"
+            message: "Not currently in any detected place",
+            debug: {
+                nearestCustomLocation: customLocationDistances
+                    .sort((a, b) => a.distance - b.distance)[0]
+            }
         });
 
     } catch (error) {
