@@ -22,10 +22,19 @@ struct ContextualPhraseDisplayView: View {
         
         Spacer()
         VStack(alignment: .leading, spacing: 10) {
+            HStack {
             Text(text)
                 .font(.system(size: 20))
                 .fontWeight(.bold)
                 .foregroundColor(.black)
+            Spacer()
+            Image(systemName: "plus.circle.fill")
+                .font(.system(size: 30))
+                .foregroundColor(.blue)
+                .onTapGesture {
+                    UIPasteboard.general.string = translation
+                }
+            }
             HStack {
                 Text(translation)
                     .font(.largeTitle)
@@ -61,6 +70,7 @@ struct ContextualPhraseDisplayView: View {
             RoundedRectangle(cornerRadius: 30)
                 .stroke(Color.blue, lineWidth: 1.8)
         )
+        
         .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
         .padding(.horizontal, 10)
         .onAppear(perform: translateText)

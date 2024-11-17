@@ -77,7 +77,7 @@ struct PhraseView: View {
                                 // different vertical and horizontal padding
                                 .padding(.vertical, 4)
                                 .padding(.horizontal, 8)
-                                .roundedBlueCorners()
+                                .roundedCorners()
                                 
                         }
                         .padding()

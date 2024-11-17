@@ -25,7 +25,7 @@ struct ContentView: View {
                 LazyVGrid(columns: columns, spacing: 20) {
                     // For each category stored in the database show a CategoryView
                     ContextualView()
-                        .roundedCustomColorCorners(with: Color.purple)
+                        .roundedCorners(color: Color.purple)
                     ForEach(categories) { category in
                         CategoryView(category: category)
                     }
