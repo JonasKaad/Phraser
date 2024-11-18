@@ -2,24 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleIdentifier</key>
-	<string></string>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
 	<key>AZURE_TRANSLATOR_API_KEY</key>
 	<string>$(AZURE_TRANSLATOR_API_KEY)</string>
 	<key>AZURE_TRANSLATOR_REGION</key>
 	<string>$(AZURE_TRANSLATOR_REGION)</string>
-	<key>SERVER_ADDRESS</key>
-	<string>$(SERVER_ADDRESS)</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We use your location to display your current address.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We need access to your location to show your current address.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>SERVER_ADDRESS</key>
+	<string>$(SERVER_ADDRESS)</string>
+	<key>UILaunchStoryboardName</key>
+	<string>Launcher</string>
 </dict>
 </plist>
