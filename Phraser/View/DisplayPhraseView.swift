@@ -40,8 +40,8 @@ struct DisplayPhraseView: View {
                         withAnimation {
                             SimpleToastNotificationPublisher.publish(
                                 notification: ToastNotification(
-                                    text: "Text copied",
-                                    color: .blue, icon: "doc.on.doc")
+                                    text: "Translation copied",
+                                    color: .blue, icon: "document.on.document.fill")
                             )
                         }
                     }
