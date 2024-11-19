@@ -33,7 +33,7 @@ struct DisplayPhraseView: View {
                     .foregroundColor(.blue)
                 Spacer()
                 Image(systemName: "document.on.document")
-                    .font(.system(size: 20))
+                    .font(.system(size: 24))
                     .foregroundColor(.blue)
                     .onTapGesture {
                         let pasteboard = UIPasteboard.general
