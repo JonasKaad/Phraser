@@ -43,8 +43,8 @@ struct ContextualPhraseDisplayView: View {
                     .fontWeight(.bold)
                     .foregroundColor(.blue)
                 Spacer()
-                Image(systemName: "doc.on.doc")
-                    .font(.system(size: 20))
+                
+                Image(systemName: "document.on.document")
                     .foregroundColor(.blue)
                     .onTapGesture {
                         UIPasteboard.general.string = translation
