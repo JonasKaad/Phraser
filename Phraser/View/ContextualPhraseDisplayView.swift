@@ -9,6 +9,7 @@ import SwiftUI
 import AVFoundation
 import Translation
 import SwiftData
+import SimpleToast
 
 struct ContextualPhraseDisplayView: View {
     let text: String
@@ -25,16 +26,16 @@ struct ContextualPhraseDisplayView: View {
         Spacer()
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-            Text(text)
-                .font(.system(size: 20))
-                .fontWeight(.bold)
-                .foregroundColor(.black)
-            Spacer()
-            Image(systemName: "plus.circle.fill")
-                .font(.system(size: 30))
-                .foregroundColor(.blue)
-                .onTapGesture {
-                    showingAddToCategorySheet = true
+                Text(text)
+                    .font(.system(size: 20))
+                    .fontWeight(.bold)
+                    .foregroundColor(.black)
+                Spacer()
+                Image(systemName: "plus.circle.fill")
+                    .font(.system(size: 30))
+                    .foregroundColor(.green)
+                    .onTapGesture {
+                        showingAddToCategorySheet = true
                 }
             }
             HStack {
@@ -49,6 +50,13 @@ struct ContextualPhraseDisplayView: View {
                     .foregroundColor(.blue)
                     .onTapGesture {
                         UIPasteboard.general.string = translation
+                        withAnimation {
+                            SimpleToastNotificationPublisher.publish(
+                                notification: ToastNotification(
+                                    text: "Translation copied",
+                                    color: .blue, icon: "document.on.document.fill")
+                            )
+                        }
                     }
                 Image(systemName: "play.circle.fill")
                     .font(.system(size: 30))
@@ -149,7 +157,13 @@ struct AddToPhraseView: View {
         do {
             try modelContext.save()
             isPresented = false
-            
+            withAnimation {
+                SimpleToastNotificationPublisher.publish(
+                    notification: ToastNotification(
+                        text: "Phrase added to \(category.name)",
+                        color: .green, icon: "folder.badge.plus")
+                )
+            }
         } catch {
             print("Failed to save phrase to category: \(error)")
         }
@@ -157,7 +171,7 @@ struct AddToPhraseView: View {
 }
 
 #Preview {
-    PreviewContainer()
+    ContextualPhraseDisplayView(text: "test")
 }
 
 struct PreviewContainer: View {

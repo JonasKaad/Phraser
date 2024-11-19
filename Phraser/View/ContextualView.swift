@@ -7,10 +7,10 @@
 
 import SwiftUI
 import CoreLocation
+import SimpleToast
 
 struct ContextualView: View {
     @State private var phrases: [String] = []
-        
         var body: some View {
             NavigationLink(destination: ContextualPhraseView(phrases: phrases)) {
                 VStack(spacing: 10) {
@@ -48,7 +48,11 @@ struct ContextualPhraseView: View {
     let phrases: [String]
     @State private var isShowingAddSheet = false
     @State private var searchText = ""
-
+    @State private var notification: ToastNotification?
+    private let toastOptions = SimpleToastOptions(
+        alignment: .bottom, hideAfter: 4
+    )
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -63,6 +67,20 @@ struct ContextualPhraseView: View {
                     }
                 }
             }
+        }.onToastNotification {
+            notification = $0
+        }
+        .simpleToast(item: $notification, options: toastOptions) {
+            
+                HStack {
+                    Image(systemName: notification?.icon ?? "exclamationmark.triangle")
+                    Text(notification?.text ?? "Default message")
+                    
+                }
+                .padding()
+                .background(notification?.color.opacity(0.8))
+                .foregroundColor(Color.white)
+            
         }
     }
 }
