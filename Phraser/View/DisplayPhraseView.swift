@@ -30,7 +30,7 @@ struct DisplayPhraseView: View {
                     .fontWeight(.bold)
                     .foregroundColor(.blue)
                 Spacer()
-                Image(systemName: "doc.on.doc")
+                Image(systemName: "document.on.document")
                     .font(.system(size: 20))
                     .foregroundColor(.blue)
                     .onTapGesture {
