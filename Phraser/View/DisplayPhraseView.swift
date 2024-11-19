@@ -16,6 +16,8 @@ struct DisplayPhraseView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.presentationMode) private var presentationMode
     @State private var showDeleteConfirmation = false
+    @State private var isPlaying = false
+
     
     var body: some View {
         Spacer()
@@ -46,16 +48,23 @@ struct DisplayPhraseView: View {
                         }
                     }
                     
-                    
-                
-                Image(systemName: "play.circle.fill")
-                    .font(.system(size: 30))
-                    .foregroundColor(.blue)
-                    .onTapGesture {
-                        let utterance = AVSpeechUtterance(string: phrase.translation)
-                                utterance.voice = AVSpeechSynthesisVoice(language: "ko-KR")
-                                SpeechSynthesizerManager.shared.speak(utterance)
-                        }
+                Image(systemName: isPlaying ? "stop.circle.fill" : "play.circle.fill")
+                            .font(.system(size: 30))
+                            .foregroundColor(.blue)
+                            .onTapGesture {
+                                if SpeechSynthesizerManager.shared.isSpeaking {
+                                    // If currently speaking, stop
+                                    SpeechSynthesizerManager.shared.stopSpeaking()
+                                } else {
+                                    // Create and speak utterance
+                                    let utterance = AVSpeechUtterance(string: phrase.translation)
+                                    utterance.voice = AVSpeechSynthesisVoice(language: "ko-KR")
+                                    SpeechSynthesizerManager.shared.speak(utterance)
+                                }
+                            }
+                            .onReceive(SpeechSynthesizerManager.shared.$isSpeaking) { speaking in
+                                isPlaying = speaking
+                            }
             }
             Text(phrase.phonetic)
                 .font(.system(size: 18))
@@ -107,6 +116,7 @@ struct DisplayPhraseView: View {
     }
     
 }
+
 
 
 #Preview {
