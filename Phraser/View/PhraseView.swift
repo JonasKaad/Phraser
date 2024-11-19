@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import AVFoundation
+import SimpleToast
 
 struct PhraseView: View {
     @Environment(\.modelContext) private var modelContext
@@ -15,6 +16,10 @@ struct PhraseView: View {
     @Query var phrases: [Phrase]
     @State private var isShowingAddSheet = false
     @State private var searchText = ""
+    @State private var notification: ToastNotification?
+    private let toastOptions = SimpleToastOptions(
+        alignment: .bottom, hideAfter: 4
+    )
 
     var body: some View {
         NavigationView {
@@ -62,9 +67,27 @@ struct PhraseView: View {
                                 .foregroundColor(.blue)
                             Spacer()
                         }
+                        
                     }
+                    
                 }
             }
+            
+        }
+        .onToastNotification {
+            notification = $0
+        }
+        .simpleToast(item: $notification, options: toastOptions) {
+            
+                HStack {
+                    Image(systemName: notification?.icon ?? "exclamationmark.triangle")
+                    Text(notification?.text ?? "Default message")
+                    
+                }
+                .padding()
+                .background(notification?.color.opacity(0.8))
+                .foregroundColor(Color.white)
+            
         }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

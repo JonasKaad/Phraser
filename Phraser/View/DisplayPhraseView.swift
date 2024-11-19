@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import AVFoundation
+import SimpleToast
 
 struct DisplayPhraseView: View {
     @ObservedObject var category: Category
@@ -35,7 +36,17 @@ struct DisplayPhraseView: View {
                     .onTapGesture {
                         let pasteboard = UIPasteboard.general
                         pasteboard.string = phrase.translation
+                        
+                        withAnimation {
+                            SimpleToastNotificationPublisher.publish(
+                                notification: ToastNotification(
+                                    text: "Text copied",
+                                    color: .blue, icon: "doc.on.doc")
+                            )
+                        }
                     }
+                    
+                    
                 
                 Image(systemName: "play.circle.fill")
                     .font(.system(size: 30))
@@ -68,22 +79,29 @@ struct DisplayPhraseView: View {
                 Label("Delete", systemImage: "trash")
             }
         }
-            .alert(isPresented: $showDeleteConfirmation) {
-                Alert(
-                    title: Text("Delete Phrase"),
-                    message: Text("Are you sure you want to delete phrase: \(phrase.text)"),
-                    primaryButton: .destructive(Text("Delete")) {
-                        deletePhrase(phrase)
-                    },
-                    secondaryButton: .cancel()
-                )
-            }
+        .alert(isPresented: $showDeleteConfirmation) {
+            Alert(
+                title: Text("Delete Phrase"),
+                message: Text("Are you sure you want to delete phrase: \(phrase.text)"),
+                primaryButton: .destructive(Text("Delete")) {
+                    deletePhrase(phrase)
+                },
+                secondaryButton: .cancel()
+            )
+        }
     }
     private func deletePhrase(_ phrase: Phrase) {
         print("Before deletion: \(String(describing: category.phrases))")
         modelContext.delete(phrase)
         if let index = category.phrases?.firstIndex(where: { $0.id == phrase.id }) {
             category.phrases?.remove(at: index)
+        }
+        withAnimation {
+            SimpleToastNotificationPublisher.publish(
+                notification: ToastNotification(
+                    text: "Phrase deleted",
+                    color: .red, icon: "trash")
+            )
         }
         print("After deletion: \(String(describing: category.phrases))")
     }
