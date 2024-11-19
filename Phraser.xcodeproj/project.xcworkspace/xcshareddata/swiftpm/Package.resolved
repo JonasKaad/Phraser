@@ -1,6 +1,15 @@
 {
-  "originHash" : "871030ad8b4de34d82fd3db08ab4faab24d9958f8e98a234957f2df214ae1156",
+  "originHash" : "9657b23cd15bf2529fce03f1ca5cb65fd9e999639725f9e5672fc7a30ad8d8bf",
   "pins" : [
+    {
+      "identity" : "simpletoast",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sanzaru/SimpleToast.git",
+      "state" : {
+        "revision" : "99330cceeea6a9068d40ccbe27efb75d240098ef",
+        "version" : "0.10.1"
+      }
+    },
     {
       "identity" : "swiftui-introspect",
       "kind" : "remoteSourceControl",

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CA8713952CECD0A3003A7F81 /* SimpleToast in Frameworks */ = {isa = PBXBuildFile; productRef = CA8713942CECD0A3003A7F81 /* SimpleToast */; };
 		CAEE2B7A2CE313F20032FFA8 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = CAEE2B792CE313F20032FFA8 /* SwiftUIIntrospect */; };
 		CAEE2B7C2CE313F20032FFA8 /* SwiftUIIntrospect-Static in Frameworks */ = {isa = PBXBuildFile; productRef = CAEE2B7B2CE313F20032FFA8 /* SwiftUIIntrospect-Static */; };
 /* End PBXBuildFile section */
@@ -57,6 +58,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CAEE2B7A2CE313F20032FFA8 /* SwiftUIIntrospect in Frameworks */,
+				CA8713952CECD0A3003A7F81 /* SimpleToast in Frameworks */,
 				CAEE2B7C2CE313F20032FFA8 /* SwiftUIIntrospect-Static in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -111,6 +113,7 @@
 			packageProductDependencies = (
 				CAEE2B792CE313F20032FFA8 /* SwiftUIIntrospect */,
 				CAEE2B7B2CE313F20032FFA8 /* SwiftUIIntrospect-Static */,
+				CA8713942CECD0A3003A7F81 /* SimpleToast */,
 			);
 			productName = Phraser;
 			productReference = CA2509E92CD7E06C00214D5D /* Phraser.app */;
@@ -142,6 +145,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				CAEE2B782CE313F20032FFA8 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
+				CA8713932CECD0A3003A7F81 /* XCRemoteSwiftPackageReference "SimpleToast" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CA2509EA2CD7E06C00214D5D /* Products */;
@@ -393,6 +397,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		CA8713932CECD0A3003A7F81 /* XCRemoteSwiftPackageReference "SimpleToast" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sanzaru/SimpleToast.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.1;
+			};
+		};
 		CAEE2B782CE313F20032FFA8 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect.git";
@@ -404,6 +416,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		CA8713942CECD0A3003A7F81 /* SimpleToast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CA8713932CECD0A3003A7F81 /* XCRemoteSwiftPackageReference "SimpleToast" */;
+			productName = SimpleToast;
+		};
 		CAEE2B792CE313F20032FFA8 /* SwiftUIIntrospect */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CAEE2B782CE313F20032FFA8 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
