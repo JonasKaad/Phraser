@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import SimpleToast
 
 struct CategoryView: View {
     @ObservedObject var category: Category
@@ -52,6 +53,13 @@ struct CategoryView: View {
     
     private func deleteCategory(_ category: Category) {
             modelContext.delete(category)
+            withAnimation {
+                SimpleToastNotificationPublisher.publish(
+                    notification: ToastNotification(
+                        text: "Category deleted",
+                        color: .red, icon: "trash")
+                )
+            }
     }
 }
 

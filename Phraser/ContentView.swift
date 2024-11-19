@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import SimpleToast
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
@@ -16,6 +17,10 @@ struct ContentView: View {
             GridItem(.flexible())
     ]
     @State private var isShowingAddSheet = false
+    @State private var notification: ToastNotification?
+    private let toastOptions = SimpleToastOptions(
+        alignment: .bottom, hideAfter: 4
+    )
 
     var body: some View {
         NavigationView {
@@ -43,10 +48,26 @@ struct ContentView: View {
             .navigationTitle("Phrasebook")
             .padding()
         }
+        .onToastNotification {
+            notification = $0
+        }
+        .simpleToast(item: $notification, options: toastOptions) {
+            
+                HStack {
+                    Image(systemName: notification?.icon ?? "exclamationmark.triangle")
+                    Text(notification?.text ?? "Default message")
+                    
+                }
+                .padding()
+                .background(notification?.color.opacity(0.8))
+                .foregroundColor(Color.white)
+            
+        }
         .sheet(isPresented: $isShowingAddSheet) {
             CreateNewCategoryView(isPresented: $isShowingAddSheet, createCategory: createCategory)
                 //.presentationDetents([.fraction(0.60)])
         }
+        
     }
     
     private func createCategory(_name: String, _logo: String) {
