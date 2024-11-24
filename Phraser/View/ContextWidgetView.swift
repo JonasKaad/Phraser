@@ -43,6 +43,7 @@ struct ContextWidgetView: View {
     }
 }
 
+// Format time to HH:mm:ss
 func currentTime() -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "HH:mm:ss"

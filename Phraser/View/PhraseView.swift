@@ -114,6 +114,7 @@ struct PhraseView: View {
         }
 
     }
+    // Filter the phrases based on the search text
     private var filteredPhrases: [Phrase] {
             if searchText.isEmpty {
                 return category.phrases ?? []

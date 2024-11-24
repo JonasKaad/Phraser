@@ -112,7 +112,7 @@ class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegat
                 let response = try JSONDecoder().decode(LocationResponse.self, from: data)
                 DispatchQueue.main.async {
                     if response.isInPlace, let place = response.place {
-                        // Format the place information
+                        // Format the place information with distance
                         let distance = place.distance >= 1000 ?
                             String(format: "%.1fkm", Double(place.distance)/1000) :
                             "\(place.distance)m"
