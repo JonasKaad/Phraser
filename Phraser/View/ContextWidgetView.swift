@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ContextWidgetView: View {
-    //@StateObject private var locationManager = LocationManager()
     @StateObject private var locationManager = KakaoLocationManager()
 
     var body: some View {
