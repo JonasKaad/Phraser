@@ -26,7 +26,6 @@ struct Place: Codable {
 
 class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private var locationManager: CLLocationManager
-    @Published var address: String = "Fetching location..."
     @Published var currentPlace: String = "Fetching location..."
     private var serverAddress: String
 
@@ -52,42 +51,14 @@ class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegat
 
     @objc func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
-        //fetchAddressFromServer(location: location)
         fetchPlaceInfo(location: location)
     }
 
     @objc func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Location update failed: \(error)")
-        address = "Unable to fetch location"
         currentPlace = "Unable to fetch location"
     }
 
-    private func fetchAddressFromServer(location: CLLocation) {
-        let url = URL(string: serverAddress)!
-        var request = URLRequest(url: url)
-        
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        let body: [String: Double] = ["latitude": location.coordinate.latitude, "longitude": location.coordinate.longitude]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-
-        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            if let error = error {
-                print("Failed to fetch address: \(error)")
-                return
-            }
-
-            guard let data = data else { return }
-            if let response = try? JSONDecoder().decode([String: String].self, from: data),
-               let address = response["address"] {
-                DispatchQueue.main.async {
-                    self?.address = address
-                }
-            }
-        }
-        task.resume()
-    }
     private func fetchPlaceInfo(location: CLLocation) {
         let url = URL(string: serverAddress)!
         var request = URLRequest(url: url)
