@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Phraser_Logo.jpg",
+      "filename" : "app_icon_lm.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,6 +13,7 @@
           "value" : "dark"
         }
       ],
+      "filename" : "app_icon_dm.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
