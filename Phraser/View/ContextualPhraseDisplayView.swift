@@ -37,41 +37,53 @@ struct ContextualPhraseDisplayView: View {
                     .foregroundColor(.green)
                     .onTapGesture {
                         showingAddToCategorySheet = true
+                    }
                 }
             }
-            HStack {
-                Text(translation)
+            if isLoading {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .padding(.top, 10)
                     .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.blue)
-                Spacer()
-                
-                Image(systemName: "document.on.document")
-                    .font(.system(size: 24))
-                    .foregroundColor(.blue)
-                    .onTapGesture {
-                        UIPasteboard.general.string = translation
-                        withAnimation {
-                            SimpleToastNotificationPublisher.publish(
-                                notification: ToastNotification(
-                                    text: "Translation copied",
-                                    color: .blue, icon: "document.on.document.fill")
-                            )
+            } else if let errorMessage = errorMessage {
+                   Text("Error: \(errorMessage)")
+                       .foregroundColor(.red)
+                       .padding(.top, 10)
+            } else {
+                HStack {
+                    Text(translation)
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.blue)
+                    Spacer()
+                    
+                    Image(systemName: "document.on.document")
+                        .font(.system(size: 24))
+                        .foregroundColor(.blue)
+                        .onTapGesture {
+                            UIPasteboard.general.string = translation
+                            withAnimation {
+                                SimpleToastNotificationPublisher.publish(
+                                    notification: ToastNotification(
+                                        text: "Translation copied",
+                                        color: .blue, icon: "document.on.document.fill")
+                                )
+                            }
                         }
-                    }
-                Image(systemName: "play.circle.fill")
-                    .font(.system(size: 30))
-                    .foregroundColor(.blue)
-                    .onTapGesture {
-                        let utterance = AVSpeechUtterance(string: translation)
-                        utterance.voice = AVSpeechSynthesisVoice(language: "ko-KR")
-                        SpeechSynthesizerManager.shared.speak(utterance)
-                    }
-            }
-                Text(phonetic)
-                    .font(.system(size: 18))
-                    .fontWeight(.bold)
-                    .foregroundColor(.gray)
+                    Image(systemName: "play.circle.fill")
+                        .font(.system(size: 30))
+                        .foregroundColor(.blue)
+                        .onTapGesture {
+                            let utterance = AVSpeechUtterance(string: translation)
+                            utterance.voice = AVSpeechSynthesisVoice(language: "ko-KR")
+                            SpeechSynthesizerManager.shared.speak(utterance)
+                        }
+                }
+                    Text(phonetic)
+                        .font(.system(size: 18))
+                        .fontWeight(.bold)
+                        .foregroundColor(.gray)
+                }
             }
         
         .frame(maxWidth: .infinity, minHeight: 120, alignment: .leading)
