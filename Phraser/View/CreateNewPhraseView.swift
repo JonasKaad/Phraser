@@ -50,15 +50,15 @@ struct CreateNewPhraseView: View {
                             .frame(height: 40)
                             .font(.system(size: 20))
                         if isLoading {
-                       ProgressView()
-                           .progressViewStyle(CircularProgressViewStyle())
-                           .padding(.top, 10)
-                           .font(.largeTitle)
-                   } else if let errorMessage = errorMessage {
-                       Text("Error: \(errorMessage)")
-                           .foregroundColor(.red)
-                           .padding(.top, 10)
-                   }else {
+                            ProgressView()
+                               .progressViewStyle(CircularProgressViewStyle())
+                               .padding(.top, 10)
+                               .font(.largeTitle)
+                        } else if let errorMessage = errorMessage {
+                           Text("Error: \(errorMessage)")
+                               .foregroundColor(.red)
+                               .padding(.top, 10)
+                        } else {
                             HStack {
                                 Text(translation)
                                     .frame(height: 40)
