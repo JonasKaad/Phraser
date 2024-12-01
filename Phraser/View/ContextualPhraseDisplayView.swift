@@ -31,6 +31,7 @@ struct ContextualPhraseDisplayView: View {
                     .fontWeight(.bold)
                     .foregroundColor(.black)
                 Spacer()
+                if !isLoading {
                 Image(systemName: "plus.circle.fill")
                     .font(.system(size: 30))
                     .foregroundColor(.green)
