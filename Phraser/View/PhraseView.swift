@@ -17,27 +17,17 @@ struct PhraseView: View {
     @State private var isShowingAddSheet = false
     @State private var searchText = ""
     @State private var notification: ToastNotification?
-    @State private var sleepTimer = 0
-    @State private var sortOption: SortOption = .dateAdded
+    @State private var sortOption: SortOption = .newestFirst
     @State private var isShowingSortMenu = false
     private let toastOptions = SimpleToastOptions(
         alignment: .bottom, hideAfter: 4
     )
     
-    var friuts = ["Alphabetical", "Date Added", "Translation"]
-    
     enum SortOption {
+        case oldestFirst
+        case newestFirst
         case alphabetical
-        case dateAdded
-        case translation
-        
-        var description: String {
-            switch self {
-            case .alphabetical: return "Alphabetical"
-            case .dateAdded: return "Date Added"
-            case .translation: return "Translation"
-            }
-        }
+        case phonetic
     }
 
     var body: some View {
