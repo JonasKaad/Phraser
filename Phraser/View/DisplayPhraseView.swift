@@ -101,9 +101,11 @@ struct DisplayPhraseView: View {
     }
     private func deletePhrase(_ phrase: Phrase) {
         print("Before deletion: \(String(describing: category.phrases))")
-        modelContext.delete(phrase)
-        if let index = category.phrases?.firstIndex(where: { $0.id == phrase.id }) {
-            category.phrases?.remove(at: index)
+        withAnimation(.spring()) {
+            modelContext.delete(phrase)
+            if let index = category.phrases?.firstIndex(where: { $0.id == phrase.id }) {
+                category.phrases?.remove(at: index)
+            }
         }
         withAnimation {
             SimpleToastNotificationPublisher.publish(
