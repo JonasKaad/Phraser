@@ -148,6 +148,9 @@ struct PhraseView: View {
 #Preview {
     let p = Phrase(id:UUID() , timestamp: Date(), category: Category(id: UUID(), timestamp: Date(), name: "Food", logo: "folder"), text: "Hello" , translation: "안녕하세요", phonetic: "annyonghaseyo")
     let p2 = Phrase(id:  UUID(), timestamp: Date(), category: Category(id: UUID(), timestamp: Date(), name: "food", logo: "folder"), text: "Jonas", translation: "조나스", phonetic: "jonaseu")
-    PhraseView(category: Category(id: UUID(), timestamp: Date(), name:"Transportation" , logo: "folder", phrases: [p,p2]))
-        .modelContainer(for: [Category.self, Phrase.self], inMemory: true)
+    NavigationView {
+        PhraseView(category: Category(id: UUID(), timestamp: Date(), name:"Transportation" , logo: "folder", phrases: [p,p2]))
+            .modelContainer(for: [Category.self, Phrase.self], inMemory: true)
+    }
+    
 }
