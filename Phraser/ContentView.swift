@@ -24,7 +24,32 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
+            
             VStack(alignment: .leading, spacing: 20) {
+                VStack {
+                    HStack {
+                        Text("Phrasebook")
+                            .font(.largeTitle.bold())
+                            .padding(.leading, 4)
+                        Spacer()
+                        Menu {
+                            Picker("Sorting Order", selection: $sortOption) {
+                                Text("Oldest First").tag(SortOption.oldestFirst)
+                                Text("Newest First").tag(SortOption.newestFirst)
+                                Text("Alphabetical").tag(SortOption.alphabetical)
+                            }
+                        } label: {
+                            Image(systemName: "arrow.up.arrow.down")
+                                .bold()
+                                .padding(.vertical, 4)
+                                .padding(.horizontal, 4)
+                                .font(.system(size: 24))
+                                .foregroundColor(.blue)
+                        }
+                        .padding(.trailing, 4)
+                    }
+                }
+                .padding(.bottom, 8)
                 ScrollView {
                 Spacer()
                 LazyVGrid(columns: columns, spacing: 20) {
@@ -46,7 +71,9 @@ struct ContentView: View {
                 
             }
             .navigationTitle("Phrasebook")
+            .navigationBarHidden(true)
             .padding()
+
         }
         .onToastNotification {
             notification = $0
