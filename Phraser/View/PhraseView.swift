@@ -24,8 +24,8 @@ struct PhraseView: View {
     )
     
     enum SortOption {
-        case oldestFirst
         case newestFirst
+        case oldestFirst
         case alphabetical
         case phonetic
     }
@@ -166,17 +166,17 @@ struct PhraseView: View {
     }
     
     private func sortPhrases(_ phrases: [Phrase]) -> [Phrase] {
-            switch sortOption {
-            case .alphabetical:
-                return phrases.sorted { $0.text.localizedCaseInsensitiveCompare($1.text) == .orderedAscending }
-            case .oldestFirst:
-                return phrases.sorted { $0.timestamp < $1.timestamp }
-            case .newestFirst:
-                return phrases.sorted { $0.timestamp > $1.timestamp }
-            case .phonetic:
-                return phrases.sorted { $0.phonetic.localizedCaseInsensitiveCompare($1.phonetic) == .orderedAscending }
-            }
+        switch sortOption {
+        case .alphabetical:
+            return phrases.sorted { $0.text.localizedCaseInsensitiveCompare($1.text) == .orderedAscending }
+        case .oldestFirst:
+            return phrases.sorted { $0.timestamp < $1.timestamp }
+        case .newestFirst:
+            return phrases.sorted { $0.timestamp > $1.timestamp }
+        case .phonetic:
+            return phrases.sorted { $0.phonetic.localizedCaseInsensitiveCompare($1.phonetic) == .orderedAscending }
         }
+    }
 }
 
 #Preview {
