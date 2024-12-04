@@ -53,6 +53,13 @@ struct PhraseView: View {
                         if let phrases = category.phrases, !phrases.isEmpty {
                             ForEach(filteredPhrases) { phrase in
                                 DisplayPhraseView(category: category, phrase: phrase)
+                                    .transition(.asymmetric(
+                                        insertion: .move(edge: .leading)
+                                            .combined(with: .opacity)
+                                            .combined(with: .scale(scale: 0.9)),
+                                        removal: .move(edge: .trailing)
+                                            .combined(with: .opacity)
+                                    ))                                    
                                 Spacer()
                             }
                         } else {
@@ -78,7 +85,7 @@ struct PhraseView: View {
                             Spacer()
                         }
                         
-                    }
+                    }.animation(.spring(response: 0.5, dampingFraction: 0.7, blendDuration: 0.5), value: sortOption)
                     
                 }
             }
