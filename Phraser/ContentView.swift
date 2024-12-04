@@ -34,7 +34,7 @@ struct ContentView: View {
         NavigationView {
             
             VStack(alignment: .leading, spacing: 20) {
-                VStack {
+                
                     HStack {
                         Text("Phrasebook")
                             .font(.largeTitle.bold())
@@ -56,7 +56,7 @@ struct ContentView: View {
                         }
                         .padding(.trailing, 4)
                     }
-                }
+                    .padding(.top, 10)
                 .padding(.bottom, 8)
                 ScrollView {
                 Spacer()
@@ -114,8 +114,9 @@ struct ContentView: View {
         let categoryName = _name
         let categoryLogo = _logo
         let newCategory = Category(id: UUID(), timestamp: Date(), name: categoryName, logo: categoryLogo)
-        
-        modelContext.insert(newCategory)
+        withAnimation(.spring()) {
+            modelContext.insert(newCategory)
+        }
     }
     
     private func sortCategory(_ categories: [Category]) -> [Category] {
