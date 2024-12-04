@@ -38,6 +38,7 @@ struct PhraseView: View {
                         .font(.system(size: 20))
                 }
                 
+                
                 VStack(alignment: .leading, spacing: 20) {
                     ScrollView {
                         if let phrases = category.phrases, !phrases.isEmpty {
@@ -50,16 +51,16 @@ struct PhraseView: View {
                             VStack {
                                 Text("No phrases found in")
                                     .font(.title)
-                            HStack(spacing: 4) {
-                                Image(systemName: category.logo)
-                                    .font(.system(size: 40))
-                                    .foregroundColor(.blue)
-                                    .padding(2)
-                                Text(category.name)
-                                    .font(.title)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.black)
-                            }
+                                HStack(spacing: 4) {
+                                    Image(systemName: category.logo)
+                                        .font(.system(size: 40))
+                                        .foregroundColor(.blue)
+                                        .padding(2)
+                                    Text(category.name)
+                                        .font(.title)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.black)
+                                }
                             }
                             Spacer(minLength: 40)
                             Text("Add some phrases to get started!")
@@ -79,14 +80,14 @@ struct PhraseView: View {
         }
         .simpleToast(item: $notification, options: toastOptions) {
             
-                HStack {
-                    Image(systemName: notification?.icon ?? "exclamationmark.triangle")
-                    Text(notification?.text ?? "Default message")
-                    
-                }
-                .padding()
-                .background(notification?.color.opacity(0.8))
-                .foregroundColor(Color.white)
+            HStack {
+                Image(systemName: notification?.icon ?? "exclamationmark.triangle")
+                Text(notification?.text ?? "Default message")
+                
+            }
+            .padding()
+            .background(notification?.color.opacity(0.8))
+            .foregroundColor(Color.white)
             
         }
             .toolbar {
