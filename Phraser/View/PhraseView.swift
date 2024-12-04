@@ -157,13 +157,25 @@ struct PhraseView: View {
         
         modelContext.insert(newPhrase)
         
-        // Add the new phrase to the category's phrases array
         if category.phrases == nil {
             category.phrases = [newPhrase]
         } else {
             category.phrases?.append(newPhrase)
         }
     }
+    
+    private func sortPhrases(_ phrases: [Phrase]) -> [Phrase] {
+            switch sortOption {
+            case .alphabetical:
+                return phrases.sorted { $0.text.localizedCaseInsensitiveCompare($1.text) == .orderedAscending }
+            case .oldestFirst:
+                return phrases.sorted { $0.timestamp < $1.timestamp }
+            case .newestFirst:
+                return phrases.sorted { $0.timestamp > $1.timestamp }
+            case .phonetic:
+                return phrases.sorted { $0.phonetic.localizedCaseInsensitiveCompare($1.phonetic) == .orderedAscending }
+            }
+        }
 }
 
 #Preview {
