@@ -66,6 +66,10 @@ struct ContentView: View {
                         .roundedCorners(color: Color.purple)
                     ForEach(sortCategory(categories)) { category in
                         CategoryView(category: category)
+                            .transition(.asymmetric(
+                                insertion: .scale.combined(with: .opacity),
+                                removal: .scale.combined(with: .opacity)
+                            ))
                     }
                     // Add button
                     Button(action: {
@@ -76,7 +80,8 @@ struct ContentView: View {
                     }
                 }
                 }
-                
+                .animation(.spring(response: 0.5, dampingFraction: 0.7, blendDuration: 0.5), value: sortOption)
+
             }
             .navigationTitle("Phrasebook")
             .navigationBarHidden(true)
