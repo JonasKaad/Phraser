@@ -77,6 +77,18 @@ struct ContentView: View {
         
         modelContext.insert(newCategory)
     }
+    
+    private func sortCategory(_ categories: [Category]) -> [Category] {
+        switch sortOption {
+        case .alphabetical:
+            return categories.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
+            }
+        case .oldestFirst:
+            return categories.sorted { $0.timestamp < $1.timestamp }
+        case .newestFirst:
+            return categories.sorted { $0.timestamp > $1.timestamp }
+        }
+    }
 }
 
 #Preview {
