@@ -162,13 +162,14 @@ struct PhraseView: View {
         let phraseTranslation = _translation
         let phrasePhonetic = _phonetic
         let newPhrase = Phrase(id:  UUID() , timestamp:Date(), category:category , text: phraseText  , translation: phraseTranslation, phonetic: phrasePhonetic )
-        
-        modelContext.insert(newPhrase)
-        
-        if category.phrases == nil {
-            category.phrases = [newPhrase]
-        } else {
-            category.phrases?.append(newPhrase)
+        withAnimation(.spring()) {
+            modelContext.insert(newPhrase)
+            
+            if category.phrases == nil {
+                category.phrases = [newPhrase]
+            } else {
+                category.phrases?.append(newPhrase)
+            }
         }
     }
     
