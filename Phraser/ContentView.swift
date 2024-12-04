@@ -18,6 +18,14 @@ struct ContentView: View {
     ]
     @State private var isShowingAddSheet = false
     @State private var notification: ToastNotification?
+    @State private var sortOption: SortOption = .newestFirst
+    
+    enum SortOption {
+        case oldestFirst
+        case newestFirst
+        case alphabetical
+    }
+    
     private let toastOptions = SimpleToastOptions(
         alignment: .bottom, hideAfter: 4
     )
@@ -56,7 +64,7 @@ struct ContentView: View {
                     // For each category stored in the database show a CategoryView
                     ContextualView()
                         .roundedCorners(color: Color.purple)
-                    ForEach(categories) { category in
+                    ForEach(sortCategory(categories)) { category in
                         CategoryView(category: category)
                     }
                     // Add button
