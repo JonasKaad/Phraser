@@ -138,15 +138,16 @@ struct PhraseView: View {
     }
     // Filter the phrases based on the search text
     private var filteredPhrases: [Phrase] {
-            if searchText.isEmpty {
-                return category.phrases ?? []
+            let filteredResult = if searchText.isEmpty {
+                category.phrases ?? []
             } else {
-                return category.phrases?.filter {
+                category.phrases?.filter {
                     $0.text.localizedCaseInsensitiveContains(searchText) ||
                     $0.translation.localizedCaseInsensitiveContains(searchText) ||
                     $0.phonetic.localizedCaseInsensitiveContains(searchText)
                 } ?? []
             }
+            return sortPhrases(filteredResult)
         }
     
     private func createPhrase(_text: String, _phonetic: String, _translation: String) {
