@@ -112,88 +112,26 @@ struct PhraseView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Menu {
-                                    Picker("Sleep Timer", selection: $sleepTimer) {
-                                        Text("Off").tag(0)
-                                        Text("5 Minutes").tag(5)
-                                        Text("10 Minutes").tag(10)
-                                        Text("15 Minutes").tag(15)
-                                        Text("30 Minutes").tag(30)
-                                        Text("45 Minutes").tag(45)
-                                        Text("1 Hour").tag(60)
-                                    }
-                                } label: {
-                                    Image(systemName: "arrow.up.arrow.down")
-                                    
-                                        .foregroundColor(.blue)
-                                }
-                // Sort Button with Dropdown
-//                ZStack {
-//                    Button(action: {
-//                        withAnimation {
-//                            isShowingSortMenu.toggle()
-//                        }
-//                    }) {
-//                        Image(systemName: "arrow.up.arrow.down")
-//                            .font(.system(size: 16))
-//                            .bold()
-//                            .foregroundColor(.blue)
-//                            .padding(.vertical, 4)
-//                    }
-//                    // Dropdown Menu
-//                    if isShowingSortMenu {
-//                        VStack {
-//                            Button(action: {
-//                                sortOption = .alphabetical
-//                                isShowingSortMenu = false
-//                            }) {
-//                                HStack {
-//                                    Text("Alphabetical")
-//                                    if sortOption == .alphabetical {
-//                                        Image(systemName: "checkmark")
-//                                    }
-//                                }
-//                            }
-//                            .padding()
-//                            
-//                            Button(action: {
-//                                sortOption = .dateAdded
-//                                isShowingSortMenu = false
-//                            }) {
-//                                HStack {
-//                                    Text("Date Added")
-//                                    if sortOption == .dateAdded {
-//                                        Image(systemName: "checkmark")
-//                                    }
-//                                }
-//                            }
-//                            .padding()
-//                            
-//                            Button(action: {
-//                                sortOption = .translation
-//                                isShowingSortMenu = false
-//                            }) {
-//                                HStack {
-//                                    Text("Translation")
-//                                    if sortOption == .translation {
-//                                        Image(systemName: "checkmark")
-//                                    }
-//                                }
-//                            }
-//                            .padding()
-//                        }
-//                        .background(Color(UIColor.systemBackground))
-//                        .cornerRadius(8)
-//                        .shadow(radius: 5)
-//                        .offset(y: 50)
-//                    }
-//                }
+                    Picker("Sorting Order", selection: $sortOption) {
+                        Text("Newest First").tag(SortOption.newestFirst)
+                        Text("Oldest First").tag(SortOption.oldestFirst)
+                        Text("Alphabetical").tag(SortOption.alphabetical)
+                        Text("Phonetic").tag(SortOption.phonetic)
+                    }
+                } label: {
+                    Image(systemName: "arrow.up.arrow.down")
+                        .bold()
+                        .padding(.vertical, 4)
+                        .padding(.horizontal, 4)
+                        .foregroundColor(.blue)
+                }
+
                 Button(action: {
                     isShowingAddSheet.toggle()}) {
                         Image(systemName: "plus")
                             .font(.system(size: 16))
                             .bold()
                             .foregroundColor(.white)
-                            // different vertical and horizontal padding
                             .padding(.vertical, 4)
                             .padding(.horizontal, 8)
                             .roundedCorners()
