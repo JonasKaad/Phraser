@@ -18,7 +18,7 @@ struct ContentView: View {
     ]
     @State private var isShowingAddSheet = false
     @State private var notification: ToastNotification?
-    @State private var sortOption: SortOption = .newestFirst
+    @State private var sortOption: SortOption = .oldestFirst
     
     enum SortOption {
         case oldestFirst
