@@ -23,12 +23,15 @@ const CUSTOM_LOCATIONS = [
     {
         name: "포항공과대학교 생활관 16동",
         coordinates: { lat: 36.017140, lng: 129.322108 },
-        category: "학교 > 기숙사"
+        category: "학교 > 기숙사",
+        address: "경상북도 포항시 남구 청암로 77, 지곡동 포항공과대학교 기숙사16동",
     },
     {
         name: "포항공과대학교 제2공학관",
         coordinates: { lat: 36.012430, lng: 129.321970 },
-        category: "학교 > 공학관"
+        category: "학교 > 공학관",
+        address: "경상북도 포항시 남구 청암로 77",
+        
     }
 ];
 
@@ -119,11 +122,7 @@ app.post('/geocode', async (req, res) => {
         // If no place is found within radius, return nearest custom location for debugging
         res.json({
             isInPlace: false,
-            message: "Not currently in any detected place",
-            debug: {
-                nearestCustomLocation: customLocationDistances
-                    .sort((a, b) => a.distance - b.distance)[0]
-            }
+            message: "Not currently in any detected place"
         });
 
     } catch (error) {
