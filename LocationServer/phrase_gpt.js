@@ -36,10 +36,11 @@ Examples:
 - Input:  Name: "Restaurant ABC", category: "음식점"
 - Output:
 {
-  "phra": "Can I see the menu?",
+  "phrase": "Can I see the menu?",
   "translation": "메뉴를 보여 주시겠어요?",
   "transliteration": "Menyureul boyeo jusigeseoyo."
-}`;
+}
+Remember to return 3 phrases.`;
 
 // Persistent conversation state
 let messages = [
@@ -100,6 +101,8 @@ app.post('/generate-phrases', async (req, res) => {
       });
   
       // Return the response to the client
+        console.log(response);
+      
       res.json({ response: assistantResponse });
     } catch (error) {
       console.error("Error communicating with Azure OpenAI:", error);
