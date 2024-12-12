@@ -18,6 +18,50 @@ const PLACE_CATEGORIES = [
     'HP8', // Hospital
     'PM9'  // Pharmacy
 ];
+
+
+
+const AZURE_OPENAI_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT;
+const AZURE_OPENAI_KEY = process.env.AZURE_OPENAI_KEY;
+
+const MASTER_PROMPT = `You are generating concise, polite, and practical phrases a user can use based on their location, address, name, and category of the place (e.g., restaurant, café, or shop). If not specified they should be Korean.
+
+- Focus on phrases relevant to typical actions for the category (e.g., ordering food in a restaurant, asking for the menu in a café, or inquiring about a product in a shop).
+- Use polite language suitable for the cultural context (e.g., formal expressions for Korean settings).
+
+Return 3 phrases in JSON format:
+{
+ "phrase": "The English version of the phrase.",
+  "translation": "The translation phrase in the target language.",
+  "transliteration": "The pronunciation guide for the phrase."
+}
+
+Examples:
+- Input: name: "Cafe XYZ", category: "카페"
+- Output:
+{
+  "phrase": "Can I have an Americano?",
+  "translation": "아메리카노 하나 주세요.",
+  "transliteration": "Amerikano hana juseyo."
+}
+- Input:  name: "Restaurant ABC", category: "음식점"
+- Output:
+{
+  "phrase": "Can I see the menu?",
+  "translation": "메뉴를 보여 주시겠어요?",
+  "transliteration": "Menyureul boyeo jusigeseoyo."
+}
+Remember to return 3 phrase as structured JSON data.`;
+
+// Persistent conversation state
+let messages = [
+    {
+        role: "system",
+        content: MASTER_PROMPT
+    }
+];
+
+
 // Custom locations
 const CUSTOM_LOCATIONS = [
     {
@@ -31,7 +75,7 @@ const CUSTOM_LOCATIONS = [
         coordinates: { lat: 36.012430, lng: 129.321970 },
         category: "학교 > 공학관",
         address: "경상북도 포항시 남구 청암로 77",
-        
+
     }
 ];
 
@@ -42,10 +86,10 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     const distance1 = (lat2 - lat1) * Math.PI / 180;
     const distance2 = (lon2 - lon1) * Math.PI / 180;
 
-    const a = Math.sin(distance1/2) * Math.sin(distance1/2) +
-            Math.cos(length1) * Math.cos(length2) *
-            Math.sin(distance2/2) * Math.sin(distance2/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const a = Math.sin(distance1 / 2) * Math.sin(distance1 / 2) +
+        Math.cos(length1) * Math.cos(length2) *
+        Math.sin(distance2 / 2) * Math.sin(distance2 / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c;
 }
@@ -53,7 +97,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 app.post('/geocode', async (req, res) => {
     try {
-        const { latitude, longitude } = req.body;
+        const { latitude, longitude, mode } = req.body;
 
         if (!latitude || !longitude) {
             return res.status(400).json({
@@ -75,54 +119,112 @@ app.post('/geocode', async (req, res) => {
         const nearestCustomLocation = customLocationDistances
             .filter(loc => loc.distance <= PLACE_DETECTION_RADIUS)
             .sort((a, b) => a.distance - b.distance)[0];
+        
+        let place = null;
+        let isInPlace = false;
 
         // If we're within range of a custom location, return it
         if (nearestCustomLocation) {
-            return res.json({
-                isInPlace: true,
-                place: {
-                    name: nearestCustomLocation.name,
-                    category: nearestCustomLocation.category,
-                    distance: nearestCustomLocation.distance,
-                    isCustomLocation: true
-                }
-            });
+            place = {
+                name: nearestCustomLocation.name,
+                category: nearestCustomLocation.category,
+                distance: nearestCustomLocation.distance,
+                isCustomLocation: true
+            };
+            isInPlace = true;
         }
 
         // If no custom location found, check Kakao API
-        const placesResponse = await axios.get('https://dapi.kakao.com/v2/local/search/category.json', {
-            params: {
-                category_group_code: PLACE_CATEGORIES.join(','),
-                x: longitude,
-                y: latitude,
-                radius: PLACE_DETECTION_RADIUS,
-                sort: 'distance'
-            },
-            headers: {
-                'Authorization': `KakaoAK ${process.env.KAKAO_API_KEY}`
-            }
-        });
+        if (!place) {
+            const placesResponse = await axios.get('https://dapi.kakao.com/v2/local/search/category.json', {
+                params: {
+                    category_group_code: PLACE_CATEGORIES.join(','),
+                    x: longitude,
+                    y: latitude,
+                    radius: PLACE_DETECTION_RADIUS,
+                    sort: 'distance'
+                },
+                headers: {
+                    'Authorization': `KakaoAK ${process.env.KAKAO_API_KEY}`
+                }
+            });
 
-        const nearestPlace = placesResponse.data.documents[0];
+            const nearestPlace = placesResponse.data.documents[0];
 
-        if (nearestPlace && parseInt(nearestPlace.distance) <= PLACE_DETECTION_RADIUS) {
-            return res.json({
-                isInPlace: true,
-                place: {
+            if (nearestPlace && parseInt(nearestPlace.distance) <= PLACE_DETECTION_RADIUS) {
+                place = {
                     name: nearestPlace.place_name,
                     category: nearestPlace.category_name,
                     distance: parseInt(nearestPlace.distance),
                     address: nearestPlace.address_name,
                     phone: nearestPlace.phone,
                     isCustomLocation: false
-                }
-            });
+                };
+                isInPlace = true;
+            }
         }
+        // Prepare response object
+        const locationResponse = {
+            isInPlace,
+            place: place,
+            message: place ? null : "Not currently in any detected place"
+        };
+        // If a place is detected, generate phrases
+        let phraseResponse = null;
+        if (isInPlace) {
+            try {
+                // If mode is "new", reset the conversation
+                if (mode === "new") {
+                    messages = [
+                        {
+                            role: "system",
+                            content: MASTER_PROMPT
+                        }
+                    ];
+                }
 
-        // If no place is found within radius, return nearest custom location for debugging
+                // Add the user input to the conversation context
+                messages.push({
+                    role: "user",
+                    content: `Address: ${place.address || 'N/A'}, Name: ${place.name}, Category: ${place.category}`
+                });
+
+                // Prepare the payload for Azure OpenAI
+                const payload = {
+                    messages,
+                    max_tokens: 2000,
+                    temperature: 0.7,
+                    top_p: 1.0
+                };
+
+                // Make the API request to Azure OpenAI
+                const response = await axios.post(AZURE_OPENAI_ENDPOINT, payload, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "api-key": AZURE_OPENAI_KEY
+                    }
+                });
+
+                // Extract the assistant's response
+                const assistantResponse = response.data.choices[0].message.content;
+
+                // Append the assistant response to the conversation
+                messages.push({
+                    role: "assistant",
+                    content: assistantResponse
+                });
+
+                phraseResponse = assistantResponse;
+            } catch (gptError) {
+                console.error("Error generating phrases:", gptError);
+                phraseResponse = null;
+            }
+        }
+        const phrases = JSON.parse(phraseResponse);
+
         res.json({
-            isInPlace: false,
-            message: "Not currently in any detected place"
+            location: locationResponse,
+            phrases: phrases
         });
 
     } catch (error) {
