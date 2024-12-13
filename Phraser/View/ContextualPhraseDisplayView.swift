@@ -184,7 +184,7 @@ struct AddToPhraseView: View {
 }
 
 #Preview {
-    ContextualPhraseDisplayView(text: "test")
+    ContextualPhraseDisplayView(text: "test", translation: "테스트", phonetic: "tesuto")
 }
 
 struct PreviewContainer: View {
