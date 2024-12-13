@@ -19,7 +19,13 @@ const PLACE_CATEGORIES = [
     'PM9'  // Pharmacy
 ];
 
-
+let generateNewPhrases = true;
+let lastGPTCallTime = 0;
+const GPT_CALL_COOLDOWN = 5000; // 5 seconds cooldown
+const INITIAL_CONNECT_DELAY = 500; // 1 second
+const initialConnections = new Map(); // Track requests per client
+const activeRequests = new Map(); // Track active requests per client
+const clientPhrases = new Map(); // Track phrases per client
 
 const AZURE_OPENAI_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT;
 const AZURE_OPENAI_KEY = process.env.AZURE_OPENAI_KEY;
@@ -73,6 +79,12 @@ const CUSTOM_LOCATIONS = [
         address: "경상북도 포항시 남구 청암로 77, 지곡동 포항공과대학교 기숙사16동",
     },
     {
+        name: "포항공과대학교 생활관 13동",
+        coordinates: { lat: 36.016900, lng: 129.322720 },
+        category: "학교 > 기숙사",
+        address: "경상북도 포항시 남구 청암로 77, 지곡동 포항공과대학교 기숙사16동",
+    },
+    {
         name: "포항공과대학교 제2공학관",
         coordinates: { lat: 36.012430, lng: 129.321970 },
         category: "학교 > 공학관",
@@ -96,10 +108,22 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * c;
 }
 
+function getClientIdentifier(req) {
+    return req.ip || 'unknown';
+}
 
 app.post('/geocode', async (req, res) => {
     try {
-        const { latitude, longitude, mode } = req.body;
+       
+        const { latitude, longitude, mode = "new", clientId } = req.body;
+
+        // Use client ID if provided, fallback to IP
+        const effectiveClientId = clientId || getClientIdentifier(req);
+        
+        // Reset phrases for client if new session
+        if (mode === "new" && !clientPhrases.has(effectiveClientId)) {
+            generateNewPhrases = true;
+        }
 
         if (!latitude || !longitude) {
             return res.status(400).json({
@@ -121,7 +145,7 @@ app.post('/geocode', async (req, res) => {
         const nearestCustomLocation = customLocationDistances
             .filter(loc => loc.distance <= PLACE_DETECTION_RADIUS)
             .sort((a, b) => a.distance - b.distance)[0];
-        
+
         let place = null;
         let isInPlace = false;
 
@@ -165,6 +189,7 @@ app.post('/geocode', async (req, res) => {
                 isInPlace = true;
             }
         }
+
         // Prepare response object
         const locationResponse = {
             isInPlace,
@@ -172,37 +197,53 @@ app.post('/geocode', async (req, res) => {
             message: place ? previousLocation : "Not currently in any detected place"
         };
 
-        if (previousLocation == place.address) {
-            res.json({
-                location: locationResponse,
-            });
-            return
-        } 
-
-        previousLocation = place.address;
+        //console.log('response up');
         
+        // currentLocation
+        const currentLocation = place?.address || place?.name || null;
+        console.log('Previous Location:', previousLocation);
+        console.log('Current Location:', currentLocation);
 
-        // If a place is detected, generate phrases
-        let phraseResponse = null;
-        if (isInPlace) {
+
+        if (!isInPlace) {
+            clientPhrases.delete(effectiveClientId);
+            console.log('Not in place, clearing phrases', locationResponse);
+            return res.json({
+                location: locationResponse
+            });
+        }
+        
+        // Check if client already has phrases for this location
+        const clientCache = clientPhrases.get(effectiveClientId);
+        if (clientCache && clientCache.location === currentLocation) {
+            previousLocation = currentLocation;
+            console.log('Returning cached phrases:', locationResponse, clientCache.phrases);
+            return res.json({
+                location: locationResponse,
+                phrases: clientCache.phrases
+            });
+        }
+
+        // Safe comparison for places
+        if (previousLocation != currentLocation) {
+            generateNewPhrases = true;
+        }
+
+        let phrases = null;
+        const currentTime = Date.now();
+        if (currentTime - lastGPTCallTime >= GPT_CALL_COOLDOWN && generateNewPhrases) {
             try {
-                // If mode is "new", reset the conversation
+                // Reset conversation if mode is "new"
                 if (mode === "new") {
-                    messages = [
-                        {
-                            role: "system",
-                            content: MASTER_PROMPT
-                        }
-                    ];
+                    messages = [{ role: "system", content: MASTER_PROMPT }];
                 }
 
-                // Add the user input to the conversation context
+                // Add user input to conversation
                 messages.push({
                     role: "user",
                     content: `Address: ${place.address || 'N/A'}, Name: ${place.name}, Category: ${place.category}`
                 });
 
-                // Prepare the payload for Azure OpenAI
                 const payload = {
                     messages,
                     max_tokens: 2000,
@@ -210,7 +251,6 @@ app.post('/geocode', async (req, res) => {
                     top_p: 1.0
                 };
 
-                // Make the API request to Azure OpenAI
                 const response = await axios.post(AZURE_OPENAI_ENDPOINT, payload, {
                     headers: {
                         "Content-Type": "application/json",
@@ -218,29 +258,58 @@ app.post('/geocode', async (req, res) => {
                     }
                 });
 
-                // Extract the assistant's response
                 const assistantResponse = response.data.choices[0].message.content;
-
-                // Append the assistant response to the conversation
                 messages.push({
                     role: "assistant",
                     content: assistantResponse
                 });
 
-                phraseResponse = assistantResponse;
+
+
+                try {
+                    phrases = JSON.parse(assistantResponse);
+                    if (!validatePhrases(phrases)) {
+                        console.error('Invalid phrase format:', phrases);
+                        phrases = null;
+                    }
+                    console.log('Parsed phrases:', phrases);
+
+                    clientPhrases.set(effectiveClientId, {
+                        location: currentLocation,
+                        phrases: phrases
+                    });
+                } catch (parseError) {
+                    console.error('JSON parse error:', parseError);
+                    console.log('Raw response:', assistantResponse);
+                    phrases = null;
+                }
+                lastGPTCallTime = currentTime;
+                
+                console.log('Successfully generated phrases');
             } catch (gptError) {
                 console.error("Error generating phrases:", gptError);
-                phraseResponse = null;
+                phrases = null;
             }
+        } else {        
+            const finalResponse = {
+                location: locationResponse
+            };
+            return res.json(finalResponse);
         }
-        const phrases = JSON.parse(phraseResponse);
 
-        res.json({
+        previousLocation = currentLocation;
+
+        // Send final response
+        const finalResponse = {
             location: locationResponse,
             phrases: phrases
-        });
+        };
+
+        console.log('Sending response:', JSON.stringify(finalResponse, null, 2));
+        return res.json(finalResponse);
 
     } catch (error) {
+      //  activeRequests.delete(clientId); // Clear request status on error
         console.error('Error:', error.response?.data || error.message);
         res.status(500).json({
             error: 'Failed to fetch location information',
@@ -248,6 +317,15 @@ app.post('/geocode', async (req, res) => {
         });
     }
 });
+
+function validatePhrases(phrases) {
+    if (!Array.isArray(phrases)) return false;
+    return phrases.every(phrase => 
+        phrase.phrase && 
+        phrase.translation && 
+        phrase.transliteration
+    );
+}
 
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
