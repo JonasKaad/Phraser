@@ -10,9 +10,10 @@ import CoreLocation
 import SimpleToast
 
 struct ContextualView: View {
-    @State private var phrases: [String] = []
+    @StateObject private var locationManager = KakaoLocationManager()
+    @State private var phrases: [PhraseWrapper] = []
         var body: some View {
-            NavigationLink(destination: ContextualPhraseView(phrases: phrases)) {
+            NavigationLink(destination: ContextualPhraseView(phrases: locationManager.currentPhrases)) {
                 VStack(spacing: 10) {
                     Image(systemName: "clock")
                         .font(.system(size: 50))
