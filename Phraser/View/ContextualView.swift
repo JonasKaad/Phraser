@@ -29,9 +29,9 @@ struct ContextualView: View {
                 .cornerRadius(10)
                 .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
             }
-            .onAppear(perform: loadContextualPhrases)
         }
-        
+}
+
         private func loadContextualPhrases() {
             let currentHour = Calendar.current.component(.hour, from: Date())
             
@@ -46,7 +46,7 @@ struct ContextualView: View {
 }
 struct ContextualPhraseView: View {
     @Environment(\.modelContext) private var modelContext
-    let phrases: [String]
+    let phrases: [PhraseWrapper]
     @State private var isShowingAddSheet = false
     @State private var searchText = ""
     @State private var notification: ToastNotification?
@@ -61,8 +61,12 @@ struct ContextualPhraseView: View {
                 
                 VStack(alignment: .leading, spacing: 20) {
                     ScrollView {
-                        ForEach(phrases, id: \.self) { phrase in
-                            ContextualPhraseDisplayView(text: phrase)
+                        ForEach(phrases) { phrase in
+                            ContextualPhraseDisplayView(
+                                text: phrase.phrase,
+                                translation: phrase.translation,
+                                phonetic: phrase.transliteration
+                            )
                             Spacer()
                         }
                     }
