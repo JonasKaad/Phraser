@@ -23,10 +23,24 @@ struct Place: Codable {
     let isCustomLocation: Bool
 }
 
+struct PhraseWrapper: Codable, Identifiable, Hashable {
+    var id = UUID()
+    let phrase: String
+    let translation: String
+    let transliteration: String
+}
+
+struct GeocodeResponse: Codable {
+    let location: LocationResponse
+    let phrases: [PhraseWrapper]?
+}
+
+
 
 class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private var locationManager: CLLocationManager
     @Published var currentPlace: String = "Fetching location..."
+    @Published var currentPhrases: [PhraseWrapper] = []
     private var serverAddress: String
 
     override init() {
