@@ -24,15 +24,34 @@ struct Place: Codable {
 }
 
 struct PhraseWrapper: Codable, Identifiable, Hashable {
-    var id = UUID()
+    let id: UUID
     let phrase: String
     let translation: String
     let transliteration: String
+    
+    enum CodingKeys: String, CodingKey {
+        case phrase, translation, transliteration
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = UUID()
+        self.phrase = try container.decode(String.self, forKey: .phrase)
+        self.translation = try container.decode(String.self, forKey: .translation)
+        self.transliteration = try container.decode(String.self, forKey: .transliteration)
+    }
+    
+    init(phrase: String, translation: String, transliteration: String) {
+        self.id = UUID()
+        self.phrase = phrase
+        self.translation = translation
+        self.transliteration = transliteration
+    }
 }
 
 struct GeocodeResponse: Codable {
     let location: LocationResponse
-    let phrases: [PhraseWrapper]?
+    let phrases: [PhraseWrapper]
 }
 
 
