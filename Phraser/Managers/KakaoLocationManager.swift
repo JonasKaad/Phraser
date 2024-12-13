@@ -128,9 +128,10 @@ class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegat
                         } else {
                             self?.currentPlace = fullResponse.location.message ?? "Not in any known location"
                         }
-                       
+                        
                         // Handle phrases
-                        self?.currentPhrases = fullResponse.phrases ?? []
+                        self?.currentPlace = fullResponse.location.place?.name ?? "Unknown"
+                        self?.currentPhrases = fullResponse.phrases
                     }
                 } catch {
                     print("Decoding error: \(error)")
