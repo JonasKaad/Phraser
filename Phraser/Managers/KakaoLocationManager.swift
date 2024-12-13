@@ -79,41 +79,44 @@ class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegat
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let coordinates: [String: Double] = ["latitude": location.coordinate.latitude, "longitude": location.coordinate.longitude]
+        let coordinates: [String: Any] = [
+                "latitude": location.coordinate.latitude,
+                "longitude": location.coordinate.longitude,
+                "mode": "new"  // Optional mode parameter
+        ]
         request.httpBody = try? JSONSerialization.data(withJSONObject: coordinates)
         
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            if let error = error {
-                print("Failed to fetch place info: \(error)")
-                DispatchQueue.main.async {
-                    self?.currentPlace = "Failed to fetch location"
-                }
-                return
-            }
-            
-            guard let data = data else { return }
-            
-            do {
-                let response = try JSONDecoder().decode(LocationResponse.self, from: data)
-                DispatchQueue.main.async {
-                    if response.isInPlace, let place = response.place {
-                        // Format the place information with distance
-                        let distance = place.distance >= 1000 ?
-                            String(format: "%.1fkm", Double(place.distance)/1000) :
-                            "\(place.distance)m"
-                            
-                        self?.currentPlace = "\(place.name) (\(distance))"
-                    } else {
-                        self?.currentPlace = response.message ?? "Not in any known location"
+                guard let data = data, error == nil else {
+                    print("Failed to fetch place info: \(error?.localizedDescription ?? "error fetching")")
+                    DispatchQueue.main.async {
+                        self?.currentPlace = "Failed to fetch location"
                     }
+                    return
                 }
-            } catch {
-                print("Decoding error: \(error)")
-                DispatchQueue.main.async {
-                    self?.currentPlace = "Error processing location data"
+                
+                do {
+                    let fullResponse = try JSONDecoder().decode(GeocodeResponse.self, from: data)
+                    
+                    DispatchQueue.main.async {
+                        // Update location display
+                        if fullResponse.location.isInPlace, let place = fullResponse.location.place {
+                            let distance = place.distance >= 1000 ?
+                                String(format: "%.1fkm", Double(place.distance)/1000) :
+                                "\(place.distance)m"
+                            
+                            self?.currentPlace = "\(place.name) (\(distance))"
+                        } else {
+                            self?.currentPlace = fullResponse.location.message ?? "Not in any known location"
+                        }
+                       
+                        // Handle phrases
+                        self?.currentPhrases = fullResponse.phrases ?? []
+                    }
+                } catch {
+                    print("Decoding error: \(error)")
                 }
             }
-        }
-        task.resume()
+            task.resume()
     }
 }
