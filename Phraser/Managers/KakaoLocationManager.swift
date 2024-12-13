@@ -83,7 +83,7 @@ class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegat
             UserDefaults.standard.set(newId, forKey: "clientId")
             self.clientId = newId
         }
-        self.serverAddress = "http://172.30.1.16:8080/geocode"
+        self.serverAddress = "http://172.30.1.100:8080/geocode"
         print("Server address: \(self.serverAddress)")
         locationManager = CLLocationManager()
         super.init()
@@ -112,7 +112,7 @@ class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegat
         let coordinates: [String: Any] = [
                 "latitude": location.coordinate.latitude,
                 "longitude": location.coordinate.longitude,
-                "mode": "new",  // Optional mode parameter
+                "mode": "new",
                 "clientId": clientId
         ]
         request.httpBody = try? JSONSerialization.data(withJSONObject: coordinates)
@@ -124,11 +124,6 @@ class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegat
                         self?.currentPlace = "Failed to fetch location"
                     }
                     return
-                }
-
-                // Debug print raw response
-                if let jsonString = String(data: data, encoding: .utf8) {
-                    print("Raw JSON response: \(jsonString)")
                 }
                 
                 do {
@@ -157,10 +152,11 @@ class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegat
                     // }
                     // Try first to decode as full response
                     if let fullResponse = try? JSONDecoder().decode(GeocodeResponse.self, from: data) {
-                        print("Decoding full response: \(fullResponse)")
+                        //print("Decoding full response: \(fullResponse)")
+                        print("full")
                         DispatchQueue.main.async {
                             if fullResponse.location.isInPlace, let place = fullResponse.location.place {
-                                print("Updating current place from full: \(place)")
+                               // print("Updating current place from full: \(place)")
                                 let distance = place.distance >= 1000 ?
                                     String(format: "%.1fkm", Double(place.distance)/1000) :
                                     "\(place.distance)m"
@@ -173,10 +169,11 @@ class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegat
 
                     // Fallback to location-only response
                     let locationResponse = try JSONDecoder().decode(LocationOnlyResponse.self, from: data)
-                    print("Decoding location-only response: \(locationResponse)")
+                    //print("Decoding location-only response: \(locationResponse)")
+                    print("location")
                     DispatchQueue.main.async {
                         if locationResponse.location.isInPlace, let place = locationResponse.location.place {
-                            print("Updating current place from location: \(place)")
+                            //print("Updating current place from location: \(place)")
                             let distance = place.distance >= 1000 ?
                                 String(format: "%.1fkm", Double(place.distance)/1000) :
                                 "\(place.distance)m"
