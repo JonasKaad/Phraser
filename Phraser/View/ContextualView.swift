@@ -32,18 +32,6 @@ struct ContextualView: View {
         }
 }
 
-        private func loadContextualPhrases() {
-            let currentHour = Calendar.current.component(.hour, from: Date())
-            
-            if currentHour < 12 {
-                phrases = ["Good morning!", "How's your morning going?"]
-            } else if currentHour < 18 {
-                phrases = ["Good afternoon!", "Enjoying the day?"]
-            } else {
-                phrases = ["Good evening!", "How was your day?"]
-            }
-        }
-}
 struct ContextualPhraseView: View {
     @Environment(\.modelContext) private var modelContext
     let phrases: [PhraseWrapper]
