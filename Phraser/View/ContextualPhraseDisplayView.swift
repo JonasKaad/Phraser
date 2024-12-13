@@ -13,9 +13,11 @@ import SimpleToast
 
 struct ContextualPhraseDisplayView: View {
     let text: String
-    @State private var translation: String = ""
-    @State private var phonetic: String = ""
-    @State private var isLoading: Bool = true
+    let translation: String
+    let phonetic: String
+    //@State private var translation: String = ""
+    //@State private var phonetic: String = ""
+    @State private var isLoading: Bool = false
     @State private var errorMessage: String?
     @State private var showingAddToCategorySheet = false
 
@@ -23,104 +25,105 @@ struct ContextualPhraseDisplayView: View {
 
     var body: some View {
         
-        Spacer()
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text(text)
-                    .font(.system(size: 20))
-                    .fontWeight(.bold)
-                    .foregroundColor(.black)
-                Spacer()
-                if !isLoading {
-                Image(systemName: "plus.circle.fill")
-                    .font(.system(size: 30))
-                    .foregroundColor(.green)
-                    .onTapGesture {
-                        showingAddToCategorySheet = true
-                    }
-                }
-            }
-            if isLoading {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .padding(.top, 10)
-                    .font(.largeTitle)
-            } else if let errorMessage = errorMessage {
-                   Text("Error: \(errorMessage)")
-                       .foregroundColor(.red)
-                       .padding(.top, 10)
-            } else {
+        //if !isLoading {
+            Spacer()
+            VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Text(translation)
-                        .font(.largeTitle)
+                    Text(text)
+                        .font(.system(size: 20))
                         .fontWeight(.bold)
-                        .foregroundColor(.blue)
+                        .foregroundColor(.black)
                     Spacer()
-                    
-                    Image(systemName: "document.on.document")
-                        .font(.system(size: 24))
-                        .foregroundColor(.blue)
-                        .onTapGesture {
-                            UIPasteboard.general.string = translation
-                            withAnimation {
-                                SimpleToastNotificationPublisher.publish(
-                                    notification: ToastNotification(
-                                        text: "Translation copied",
-                                        color: .blue, icon: "document.on.document.fill")
-                                )
-                            }
-                        }
-                    Image(systemName: "play.circle.fill")
+                    Image(systemName: "plus.circle.fill")
                         .font(.system(size: 30))
-                        .foregroundColor(.blue)
+                        .foregroundColor(.green)
                         .onTapGesture {
-                            let utterance = AVSpeechUtterance(string: translation)
-                            utterance.voice = AVSpeechSynthesisVoice(language: "ko-KR")
-                            SpeechSynthesizerManager.shared.speak(utterance)
+                            showingAddToCategorySheet = true
                         }
                 }
+                
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .padding(.top, 10)
+                        .font(.largeTitle)
+                } else if let errorMessage = errorMessage {
+                    Text("Error: \(errorMessage)")
+                        .foregroundColor(.red)
+                        .padding(.top, 10)
+                } else {
+                    HStack {
+                        Text(translation)
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(.blue)
+                        Spacer()
+                        
+                        Image(systemName: "document.on.document")
+                            .font(.system(size: 24))
+                            .foregroundColor(.blue)
+                            .onTapGesture {
+                                UIPasteboard.general.string = translation
+                                withAnimation {
+                                    SimpleToastNotificationPublisher.publish(
+                                        notification: ToastNotification(
+                                            text: "Translation copied",
+                                            color: .blue, icon: "document.on.document.fill")
+                                    )
+                                }
+                            }
+                        Image(systemName: "play.circle.fill")
+                            .font(.system(size: 30))
+                            .foregroundColor(.blue)
+                            .onTapGesture {
+                                let utterance = AVSpeechUtterance(string: translation)
+                                utterance.voice = AVSpeechSynthesisVoice(language: "ko-KR")
+                                SpeechSynthesizerManager.shared.speak(utterance)
+                            }
+                    }
                     Text(phonetic)
                         .font(.system(size: 18))
                         .fontWeight(.bold)
                         .foregroundColor(.gray)
                 }
             }
-        
-        .frame(maxWidth: .infinity, minHeight: 120, alignment: .leading)
-        .padding(18)
-        .background(Color(UIColor.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 30))
-        .overlay(
-            RoundedRectangle(cornerRadius: 30)
-                .stroke(Color.blue, lineWidth: 1.8)
-        ).sheet(isPresented: $showingAddToCategorySheet) {
-            AddToPhraseView(
-                isPresented: $showingAddToCategorySheet, text: text, translation: translation, phonetic: phonetic
-            )
+            
+            .frame(maxWidth: .infinity, minHeight: 120, alignment: .leading)
+            .padding(18)
+            .background(Color(UIColor.systemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 30))
+            .overlay(
+                RoundedRectangle(cornerRadius: 30)
+                    .stroke(Color.blue, lineWidth: 1.8)
+            ).sheet(isPresented: $showingAddToCategorySheet) {
+                AddToPhraseView(
+                    isPresented: $showingAddToCategorySheet, text: text, translation: translation, phonetic: phonetic
+                )
+            }
+            
+            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
+            .padding(.horizontal, 10)
+            //.onAppear(perform: translateText)
         }
-        
-        .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
-        .padding(.horizontal, 10)
-        .onAppear(perform: translateText)
-    }
+    //}
     
 
-    private func translateText() {
-            isLoading = true
-            errorMessage = nil
-            
-            translator?.translate(text: text, to: "ko") { translatedText, transliteration, error in
-                DispatchQueue.main.async {
-                    isLoading = false
-                    if let error = error {
-                        self.errorMessage = error.localizedDescription
-                    } else {
-                        self.translation = translatedText ?? ""
-                        self.phonetic = transliteration ?? ""
-                    }
-                }
-            }
-        }
+//    private func translateText() {
+//            isLoading = true
+//            errorMessage = nil
+//            
+//            translator?.translate(text: text, to: "ko") { translatedText, transliteration, error in
+//                DispatchQueue.main.async {
+//                    isLoading = false
+//                    if let error = error {
+//                        self.errorMessage = error.localizedDescription
+//                    } else {
+//                        self.translation = translatedText ?? ""
+//                        self.phonetic = transliteration ?? ""
+//                    }
+//                }
+//            }
+//        }
 }
 
 struct AddToPhraseView: View {
