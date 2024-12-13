@@ -61,6 +61,8 @@ let messages = [
     }
 ];
 
+let previousLocation = null;
+
 
 // Custom locations
 const CUSTOM_LOCATIONS = [
@@ -167,8 +169,19 @@ app.post('/geocode', async (req, res) => {
         const locationResponse = {
             isInPlace,
             place: place,
-            message: place ? null : "Not currently in any detected place"
+            message: place ? previousLocation : "Not currently in any detected place"
         };
+
+        if (previousLocation == place.address) {
+            res.json({
+                location: locationResponse,
+            });
+            return
+        } 
+
+        previousLocation = place.address;
+        
+
         // If a place is detected, generate phrases
         let phraseResponse = null;
         if (isInPlace) {
