@@ -11,9 +11,10 @@ import SimpleToast
 
 struct ContextualView: View {
     @StateObject private var locationManager = KakaoLocationManager()
-    @State private var phrases: [PhraseWrapper] = []
+    @StateObject private var phraseManager = PhraseFetchManager()
+//    @State private var phrases: [PhraseWrapper] = []
         var body: some View {
-            NavigationLink(destination: ContextualPhraseView(phrases: locationManager.currentPhrases)) {
+            NavigationLink(destination: ContextualPhraseView()) {
                 VStack(spacing: 10) {
                     Image(systemName: "clock")
                         .font(.system(size: 50))
@@ -34,10 +35,13 @@ struct ContextualView: View {
 
 struct ContextualPhraseView: View {
     @Environment(\.modelContext) private var modelContext
-    let phrases: [PhraseWrapper]
+    //@State var phrases: [PhraseWrapper]
+   // let text: String
+    @State private var phraseManager = PhraseFetchManager()
     @State private var isShowingAddSheet = false
     @State private var searchText = ""
     @State private var notification: ToastNotification?
+    @State private var isLoading = true
     private let toastOptions = SimpleToastOptions(
         alignment: .bottom, hideAfter: 4
     )
@@ -46,21 +50,45 @@ struct ContextualPhraseView: View {
         NavigationView {
             VStack {
                 ContextWidgetView()
-                
-                VStack(alignment: .leading, spacing: 20) {
-                    ScrollView {
-                        ForEach(phrases) { phrase in
-                            ContextualPhraseDisplayView(
-                                text: phrase.phrase,
-                                translation: phrase.translation,
-                                phonetic: phrase.transliteration
-                            )
-                            Spacer()
+                if phraseManager.currentPhrases.isEmpty {
+                    VStack(alignment: .leading, spacing: 20) {
+                        Spacer()
+                        ProgressView("Loading Phrases...")
+                            .progressViewStyle(CircularProgressViewStyle())
+                            .scaleEffect(2)
+                            .padding(.top, 10)
+                            .tint(.purple)
+                        
+                        Spacer()
+                        
+//                        Button("Load Phrases") {
+//                            isLoading = false
+//                            phraseManager.fetchPhrases()
+//                        }
+                        Spacer()
+                    }
+                } else {
+                    VStack(alignment: .leading, spacing: 20) {
+                        ScrollView {
+                            ForEach(phraseManager.currentPhrases) { phrase in
+                                ContextualPhraseDisplayView(
+                                    text: phrase.phrase,
+                                    translation: phrase.translation,
+                                    phonetic: phrase.transliteration
+                                )
+                                Spacer()
+                            }
+                            Button("Refresh Phrases") {
+                                isLoading = false
+                                phraseManager.fetchPhrases(mode: "append")
+                            }
                         }
                     }
                 }
             }
-        }.onToastNotification {
+        }
+        .onAppear(perform: {phraseManager.fetchPhrases()})
+        .onToastNotification {
             notification = $0
         }
         .simpleToast(item: $notification, options: toastOptions) {
@@ -73,11 +101,10 @@ struct ContextualPhraseView: View {
                 .padding()
                 .background(notification?.color.opacity(0.8))
                 .foregroundColor(Color.white)
-            
         }
     }
 }
 #Preview{
     let phrases: [PhraseWrapper] = [PhraseWrapper(phrase: "Good evening!", translation: "좋은 저녁", transliteration: "joeun jonyok")]
-    ContextualPhraseView(phrases: phrases)
+    ContextualPhraseView()
 }
