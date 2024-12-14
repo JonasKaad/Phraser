@@ -15,8 +15,8 @@ struct ContextualPhraseDisplayView: View {
     let text: String
     let translation: String
     let phonetic: String
-    //@State private var translation: String = ""
-    //@State private var phonetic: String = ""
+//    @State private var translation: String = ""
+//    @State private var phonetic: String = ""
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?
     @State private var showingAddToCategorySheet = false
@@ -103,7 +103,7 @@ struct ContextualPhraseDisplayView: View {
             
             .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
             .padding(.horizontal, 10)
-            //.onAppear(perform: translateText)
+           // .onAppear(perform: translateText)
         }
     //}
     
@@ -187,7 +187,7 @@ struct AddToPhraseView: View {
 }
 
 #Preview {
-    ContextualPhraseDisplayView(text: "test", translation: "테스트", phonetic: "tesuto")
+    ContextualPhraseDisplayView(text: "test", translation: "시험", phonetic: "sihom")
 }
 
 struct PreviewContainer: View {
