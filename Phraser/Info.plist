@@ -13,6 +13,8 @@
 	</dict>
 	<key>SERVER_ADDRESS</key>
 	<string>$(SERVER_ADDRESS)</string>
+	<key>SERVER_PHRASES_ADDRESS</key>
+	<string>$(SERVER_PHRASES_ADDRESS)</string>
 	<key>UILaunchStoryboardName</key>
 	<string>Launcher</string>
 </dict>
