@@ -20,6 +20,7 @@ struct ContextualPhraseDisplayView: View {
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?
     @State private var showingAddToCategorySheet = false
+    @ObservedObject var localizedManager = LocalizedManager.shared
 
     let translator = AzureTranslator.shared
 
@@ -77,7 +78,7 @@ struct ContextualPhraseDisplayView: View {
                             .foregroundColor(.blue)
                             .onTapGesture {
                                 let utterance = AVSpeechUtterance(string: translation)
-                                utterance.voice = AVSpeechSynthesisVoice(language: "ko-KR")
+                                utterance.voice = AVSpeechSynthesisVoice(language: localizedManager.currentLanguage.localeInfo.speech)
                                 SpeechSynthesizerManager.shared.speak(utterance)
                             }
                     }
