@@ -31,12 +31,6 @@ const CUSTOM_LOCATIONS = [
         address: "경상북도 포항시 남구 청암로 77, 지곡동 포항공과대학교 기숙사16동",
     },
     {
-        name: "포항공과대학교 생활관 13동",
-        coordinates: { lat: 36.016900, lng: 129.322720 },
-        category: "학교 > 기숙사",
-        address: "경상북도 포항시 남구 청암로 77, 지곡동 포항공과대학교 기숙사16동",
-    },
-    {
         name: "포항공과대학교 제2공학관",
         coordinates: { lat: 36.012430, lng: 129.321970 },
         category: "학교 > 공학관",
@@ -148,7 +142,7 @@ app.post('/geocode', async (req, res) => {
 
 app.post('/phrases', async (req, res) => {
     try {
-        const { name, category, address, time, mode } = req.body;
+        const { name, category, address, time, mode, lang } = req.body;
 
         if (!name || !category) {
             return res.status(400).json({
@@ -156,7 +150,7 @@ app.post('/phrases', async (req, res) => {
             });
         }
 
-        console.log("was called with name: ", name, " category: ", category, " address: ", address, "time: ", time, " mode: ", mode);
+        console.log("was called with name: ", name, " category: ", category, " address: ", address, "time: ", time, " mode: ", mode, " lang: ", lang);
 
         try {
             // Reset
@@ -168,7 +162,7 @@ app.post('/phrases', async (req, res) => {
             // Add user input to conversation
             messages.push({
                 role: "user",
-                content: `Address: ${address || 'N/A'}, Name: ${name}, Category: ${category}, Date/Time: ${time || 'N/A'}`
+                content: `Address: ${address || 'N/A'}, Name: ${name}, Category: ${category}, Date/Time: ${time || 'N/A'}, Target Language: ${lang || 'Korean'}`
             });
 
             const payload = {
@@ -225,15 +219,15 @@ app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
 
-const MASTER_PROMPT = `You are generating concise, polite, and practical phrases a user can use based on their location, date, address, name, and category of the place (e.g., restaurant, café, or shop). If not specified they should be Korean.
+const MASTER_PROMPT = `You are generating concise, polite, and practical phrases a user can use based on their location, date, address, name, and category of the place (e.g., restaurant, café, or shop). Phrases should be translated to the target language.
 
 - Focus on phrases relevant to typical actions for the category (e.g., ordering food in a restaurant, asking for the menu in a café, or inquiring about a product in a shop).
-- Take holidays, weekends, and time of day into account (e.g., "Good morning" or "Merry Christmas").
+- Take holidays, weekends, and time of day into account (e.g., "Good morning" or "Merry Christmas/Halloween/Chuseok").
 - Use polite language suitable for the cultural context (e.g., formal expressions for Korean settings).
 
 Return 3 phrases in JSON format:
 {
- "phrase": "The English version of the phrase.",
+  "phrase": "The English version of the phrase.",
   "translation": "The translation phrase in the target language.",
   "transliteration": "The pronunciation guide for the phrase."
 }
@@ -253,7 +247,7 @@ Examples:
   "translation": "메뉴를 보여 주시겠어요?",
   "transliteration": "Menyureul boyeo jusigeseoyo."
 }
-Remember to return 3 phrase as structured JSON data.`;
+Return 3 phrases as structured JSON data.`;
 
 // Persistent conversation state
 let messages = [
