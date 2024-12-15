@@ -11,25 +11,25 @@ import Combine
 
 enum SupportedLanguage: String, CaseIterable {
     case korean = "ko"
-    case french = "fr"
     case chinese = "cn"
+    case french = "fr"
     
     var localeInfo: (speech: String, translate: String, flag: String) {
         switch self {
         case .korean:
             return ("ko-KR", "ko", "kr")
-        case .french:
-            return ("fr-FR", "fr", "fr")
         case .chinese:
             return ("zh-CN", "zh", "cn")
+        case .french:
+            return ("fr-FR", "fr", "fr")
         }
     }
     
     var displayName: String {
         switch self {
         case .korean: return "Korean"
-        case .french: return "French"
         case .chinese: return "Chinese"
+        case .french: return "French"
         }
     }
 }
