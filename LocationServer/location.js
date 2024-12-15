@@ -64,7 +64,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 app.post('/geocode', async (req, res) => {
     try {
-        const { latitude, longitude, mode } = req.body;
+        const { latitude, longitude } = req.body;
 
         if (!latitude || !longitude) {
             return res.status(400).json({
@@ -148,13 +148,15 @@ app.post('/geocode', async (req, res) => {
 
 app.post('/phrases', async (req, res) => {
     try {
-        const { name, category, address, mode } = req.body;
-        if (!name || !category || !address) {
+        const { name, category, address, time, mode } = req.body;
+
+        if (!name || !category) {
             return res.status(400).json({
-                error: 'Missing required parameters: latitude and longitude'
+                error: 'Missing required parameters: name and category'
             });
         }
-        console.log("was called with name: ", name, " category: ", category, " address: ", address, " mode: ", mode);
+
+        console.log("was called with name: ", name, " category: ", category, " address: ", address, "time: ", time, " mode: ", mode);
 
         try {
             // Reset
@@ -166,12 +168,12 @@ app.post('/phrases', async (req, res) => {
             // Add user input to conversation
             messages.push({
                 role: "user",
-                content: `Address: ${address || 'N/A'}, Name: ${name}, Category: ${category}`
+                content: `Address: ${address || 'N/A'}, Name: ${name}, Category: ${category}, Date/Time: ${time || 'N/A'}`
             });
 
             const payload = {
                 messages,
-                max_tokens: 2000,
+                max_tokens: 3000,
                 temperature: 0.7,
                 top_p: 1.0
             };
@@ -223,9 +225,10 @@ app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
 
-const MASTER_PROMPT = `You are generating concise, polite, and practical phrases a user can use based on their location, address, name, and category of the place (e.g., restaurant, café, or shop). If not specified they should be Korean.
+const MASTER_PROMPT = `You are generating concise, polite, and practical phrases a user can use based on their location, date, address, name, and category of the place (e.g., restaurant, café, or shop). If not specified they should be Korean.
 
 - Focus on phrases relevant to typical actions for the category (e.g., ordering food in a restaurant, asking for the menu in a café, or inquiring about a product in a shop).
+- Take holidays, weekends, and time of day into account (e.g., "Good morning" or "Merry Christmas").
 - Use polite language suitable for the cultural context (e.g., formal expressions for Korean settings).
 
 Return 3 phrases in JSON format:
