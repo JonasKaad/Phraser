@@ -194,9 +194,9 @@ struct PreviewContainer: View {
     func preloadMockData(container: ModelContainer) {
         let context = container.mainContext
 
-        let mockCategory1 = Category(id: UUID(), timestamp: Date(), name: "Help", logo: "sos", phrases: [])
-        let mockCategory2 = Category(id: UUID(), timestamp: Date(), name: "Drinks", logo: "wineglass", phrases: [])
-        let mockCategory3 = Category(id: UUID(), timestamp: Date(), name: "Conversation", logo: "translate", phrases: [])
+        let mockCategory1 = Category(id: UUID(), timestamp: Date(), name: "Help", logo: "sos", phrases: [], language: "ko")
+        let mockCategory2 = Category(id: UUID(), timestamp: Date(), name: "Drinks", logo: "wineglass", phrases: [], language: "ko")
+        let mockCategory3 = Category(id: UUID(), timestamp: Date(), name: "Conversation", logo: "translate", phrases: [], language: "ko")
         
         context.insert(mockCategory1)
         context.insert(mockCategory2)

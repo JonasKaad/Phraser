@@ -17,7 +17,7 @@ struct DisplayPhraseView: View {
     @Environment(\.presentationMode) private var presentationMode
     @State private var showDeleteConfirmation = false
     @State private var isPlaying = false
-
+    @ObservedObject var localizedManager = LocalizedManager.shared
     
     var body: some View {
         Spacer()
@@ -58,7 +58,7 @@ struct DisplayPhraseView: View {
                                 } else {
                                     // Create and speak utterance
                                     let utterance = AVSpeechUtterance(string: phrase.translation)
-                                    utterance.voice = AVSpeechSynthesisVoice(language: "ko-KR")
+                                    utterance.voice = AVSpeechSynthesisVoice(language: localizedManager.currentLanguage.localeInfo.speech)
                                     SpeechSynthesizerManager.shared.speak(utterance)
                                 }
                             }
@@ -122,8 +122,8 @@ struct DisplayPhraseView: View {
 
 
 #Preview {
-    let p = Phrase(id:UUID() , timestamp: Date(), category: Category(id: UUID(), timestamp: Date(), name: "Food", logo: "folder"), text: "Hello" , translation: "안녕하세요", phonetic: "annyonghaseyo")
-    let p2 = Phrase(id:  UUID(), timestamp: Date(), category: Category(id: UUID(), timestamp: Date(), name: "Food", logo: "folder"), text: "Jonas", translation: "조나스", phonetic: "jonaseu")
-    PhraseView(category: Category(id: UUID(), timestamp: Date(), name:"transportation" , logo: "folder", phrases: [p,p2]))
+    let p = Phrase(id:UUID() , timestamp: Date(), category: Category(id: UUID(), timestamp: Date(), name: "Food", logo: "folder", language: "ko"), text: "Hello" , translation: "안녕하세요", phonetic: "annyonghaseyo")
+    let p2 = Phrase(id:  UUID(), timestamp: Date(), category: Category(id: UUID(), timestamp: Date(), name: "Food", logo: "folder", language: "ko"), text: "Jonas", translation: "조나스", phonetic: "jonaseu")
+    PhraseView(category: Category(id: UUID(), timestamp: Date(), name:"transportation" , logo: "folder", phrases: [p,p2], language: "ko"))
         .modelContainer(for: [Category.self, Phrase.self], inMemory: true)
 }
