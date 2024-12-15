@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct PhraseWrapper: Codable, Identifiable, Hashable {
     let id: UUID
@@ -42,7 +43,8 @@ class PhraseFetchManager: ObservableObject {
     @Published var foundPhrases: String = "Fetching phrases..."
     @Published var refreshCompleted = false
     @Published var isLoading = false
-    
+    @ObservedObject var localizedManager = LocalizedManager.shared
+
     private var previousPlace: String = ""
     private var previousCategory: String = ""
     private var previousAddress: String = ""
@@ -52,17 +54,17 @@ class PhraseFetchManager: ObservableObject {
     private var currentTask: Task<Void, Never>? // To keep track of ongoing tasks
 
     init() {
-        self.serverAddress = "http://172.30.1.100:8080/phrases"
+        //self.serverAddress = "http://172.30.1.100:8080/phrases"
         // Decode server address from Base64 encoding
-//        if let encodedAddress = Bundle.main.object(forInfoDictionaryKey: "SERVER_PHRASES_ADDRESS") as? String,
-//           let data = Data(base64Encoded: encodedAddress),
-//           let serverAddress = String(data: data, encoding: .utf8) {
-//            print("Decoded Server Address: \(serverAddress)")
-//            self.serverAddress = serverAddress
-//        } else {
-//            print("Failed to decode server address")
-//            self.serverAddress = "undefined"
-//        }
+        if let encodedAddress = Bundle.main.object(forInfoDictionaryKey: "SERVER_PHRASES_ADDRESS") as? String,
+           let data = Data(base64Encoded: encodedAddress),
+           let serverAddress = String(data: data, encoding: .utf8) {
+            print("Decoded Server Address: \(serverAddress)")
+            self.serverAddress = serverAddress
+        } else {
+            print("Failed to decode server address")
+            self.serverAddress = "undefined"
+        }
     }
     
     func cancelOngoingTask() {
@@ -108,7 +110,7 @@ class PhraseFetchManager: ObservableObject {
                     "address": previousAddress,
                     "time": currentDateTime(),
                     "mode": mode,
-                    "lang": "Korean"
+                    "lang": localizedManager.currentLanguage.displayName
                 ]
                 
                 
