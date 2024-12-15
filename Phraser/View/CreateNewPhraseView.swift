@@ -15,9 +15,11 @@ import AVFoundation
 struct CreateNewPhraseView: View {
     @Binding var isPresented: Bool
     let createPhrase: (String, String, String) -> Void
-    @State private var configuration = TranslationSession.Configuration(source: .init(identifier: "en-US"), target: .init(identifier: "ko-kr"))
+    @ObservedObject var localizedManager = LocalizedManager.shared
+    @State private var configuration = TranslationSession.Configuration(source: .init(identifier: "en-US"), target: .init(identifier: "ko-KR"))
     @State var text: String = ""
     @State private var becomeFirstResponder = true
+
     @State var translation: String = ""
     @State var phonetic: String = ""
     let translator = AzureTranslator.shared
@@ -71,7 +73,7 @@ struct CreateNewPhraseView: View {
                                         .foregroundColor(.blue)
                                         .onTapGesture {
                                             let utterance = AVSpeechUtterance(string: translation)
-                                            utterance.voice = AVSpeechSynthesisVoice(language: "ko-KR")
+                                            utterance.voice = AVSpeechSynthesisVoice(language: localizedManager.currentLanguage.localeInfo.speech)
                                             SpeechSynthesizerManager.shared.speak(utterance)
                                         }
                                     }
