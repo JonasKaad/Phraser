@@ -162,14 +162,15 @@ app.post('/phrases', async (req, res) => {
             // Add user input to conversation
             messages.push({
                 role: "user",
-                content: `Address: ${address || 'N/A'}, Name: ${name}, Category: ${category}, Date/Time: ${time || 'N/A'}, Target Language: ${lang || 'Korean'}`
+                content: `Address: ${address || 'N/A'}, Name: ${name}, Category: ${category}, Date/Time: ${time || 'N/A'}, Target Translation Language: ${lang || 'Korean'}`
             });
 
             const payload = {
                 messages,
                 max_tokens: 3000,
-                temperature: 0.7,
-                top_p: 1.0
+                temperature: 0.8,
+                top_p: 1.0,
+                frequency_penalty: 0.30,
             };
 
             const response = await axios.post(AZURE_OPENAI_ENDPOINT, payload, {
@@ -219,7 +220,7 @@ app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
 
-const MASTER_PROMPT = `You are generating concise, polite, and practical phrases a user can use based on their location, date, address, name, and category of the place (e.g., restaurant, café, or shop). Phrases should be translated to the target language.
+const MASTER_PROMPT = `You are generating concise, polite, and practical phrases a user can use based on their location, date, address, name, and category of the place (e.g., restaurant, café, or shop). Translate to the target language.
 
 - Focus on phrases relevant to typical actions for the category (e.g., ordering food in a restaurant, asking for the menu in a café, or inquiring about a product in a shop).
 - Take holidays, weekends, and time of day into account (e.g., "Good morning" or "Merry Christmas/Halloween/Chuseok").
@@ -228,26 +229,26 @@ const MASTER_PROMPT = `You are generating concise, polite, and practical phrases
 Return 3 phrases in JSON format:
 {
   "phrase": "The English version of the phrase.",
-  "translation": "The translation phrase in the target language.",
+  "translation": "The phrase translated in the target language.",
   "transliteration": "The pronunciation guide for the phrase."
 }
 
 Examples:
-- Input: name: "Cafe XYZ", category: "카페"
+- Input: Name: "Cafe XYZ", Category: "카페", Target Translation Language: "Korean"
 - Output:
 {
   "phrase": "Can I have an Americano?",
   "translation": "아메리카노 하나 주세요.",
   "transliteration": "Amerikano hana juseyo."
 }
-- Input:  name: "Restaurant ABC", category: "음식점"
+- Input:  Name: "Restaurant ABC", Category: "음식점", Target Translation Language: "Korean"
 - Output:
 {
   "phrase": "Can I see the menu?",
   "translation": "메뉴를 보여 주시겠어요?",
   "transliteration": "Menyureul boyeo jusigeseoyo."
 }
-Return 3 phrases as structured JSON data.`;
+Return 3 phrases as structured JSON data: "phrase" MUST always be in english, "translation" is target language.`;
 
 // Persistent conversation state
 let messages = [
