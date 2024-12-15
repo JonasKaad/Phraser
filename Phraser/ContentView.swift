@@ -20,6 +20,7 @@ struct ContentView: View {
     @State private var notification: ToastNotification?
     @State private var sortOption: SortOption = .oldestFirst
     @ObservedObject var localizedManager = LocalizedManager.shared
+    @State private var isDrawerVisible = false
 
     enum SortOption {
         case oldestFirst
@@ -41,11 +42,14 @@ struct ContentView: View {
                             .font(.largeTitle.bold())
                             .padding(.leading, 4)
                         Spacer()
-                        NavigationLink(destination: PhraseBookView()) {
-                            Text(flag(for: localizedManager.currentLanguage.localeInfo.flag.uppercased()))
-                                .font(.system(size: 40))
-                                .padding(.trailing, 4)
-                            }
+                        Button(action: {
+                            // If creating a new category is not currently being shown
+                            isDrawerVisible.toggle()}) {
+                                // Show the Add new catgory button
+                                Text(flag(for: localizedManager.currentLanguage.localeInfo.flag.uppercased()))
+                                    .font(.system(size: 40))
+                                    .padding(.trailing, 4)
+                        }
                         Menu {
                             Picker("Sorting Order", selection: $sortOption) {
                                 Text("Oldest First").tag(SortOption.oldestFirst)
@@ -111,8 +115,12 @@ struct ContentView: View {
         }
         .sheet(isPresented: $isShowingAddSheet) {
             CreateNewCategoryView(isPresented: $isShowingAddSheet, createCategory: createCategory)
-                //.presentationDetents([.fraction(0.60)])
+            //.presentationDetents([.fraction(0.60)])
         }
+        .sheet(isPresented: $isDrawerVisible) {
+            PhraseBookView(isPresented: $isDrawerVisible)
+        }
+        
         
     }
     
