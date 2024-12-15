@@ -114,7 +114,7 @@ struct CreateNewPhraseView: View {
             errorMessage = nil
 
             
-            translator?.translate(text: text, to: "ko") { translatedText, transliteration, error in
+            translator?.translate(text: text, to: localizedManager.currentLanguage.localeInfo.translate) { translatedText, transliteration, error in
                     DispatchQueue.main.async {
                         isLoading = false  // End loading
                         
