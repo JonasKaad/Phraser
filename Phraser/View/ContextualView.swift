@@ -12,7 +12,6 @@ import SimpleToast
 struct ContextualView: View {
     @StateObject private var locationManager = KakaoLocationManager()
     @StateObject private var phraseManager = PhraseFetchManager()
-//    @State private var phrases: [PhraseWrapper] = []
         var body: some View {
             NavigationLink(destination: ContextualPhraseView()) {
                 VStack(spacing: 10) {
@@ -69,8 +68,7 @@ struct ContextualPhraseView: View {
                                     Spacer()
                                     ProgressView()
                                         .progressViewStyle(CircularProgressViewStyle())
-                                        .tint(.blue)
-                                        .scaleEffect(2)
+                                        .scaleEffect(1.5)
                                     Spacer()
                                 }
                             }
@@ -81,7 +79,7 @@ struct ContextualPhraseView: View {
                                     Spacer()
                                 Image(systemName: "checkmark.circle")
                                     .foregroundColor(.green)
-                                    .transition(.scale)  // Animation for showing/hiding
+                                    .transition(.scale)
                                     .scaleEffect(2)
                                     Spacer()
                                 }
@@ -98,14 +96,19 @@ struct ContextualPhraseView: View {
                             }
                         }
                         .refreshable {
-                            refreshPhrases()
+                            isRefreshing = true
+                            showCheckmark = false
+                            await phraseManager.fetchPhrases(mode: "refresh")
                         }
                     }
                 }
             }
         }
-        .onAppear(perform: {phraseManager.fetchPhrases()})
+        .task {
+            await phraseManager.fetchPhrases()
+        }
         .onChange(of: phraseManager.refreshCompleted, {
+            
             // Only trigger if it's not the first load
             if !isFirstLoad && phraseManager.refreshCompleted {
                 stopRefreshing()
@@ -132,14 +135,6 @@ struct ContextualPhraseView: View {
         }
     }
     
-    // Refresh logic
-    private func refreshPhrases() {
-        isRefreshing = true
-        showCheckmark = false  // Reset checkmark visibility
-
-        phraseManager.fetchPhrases(mode: "refresh")
-    }
-
     // Stops the refresh animation and shows the checkmark
     private func stopRefreshing() {
         isRefreshing = false
