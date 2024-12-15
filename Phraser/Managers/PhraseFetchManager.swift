@@ -40,6 +40,7 @@ struct PhraseResponse: Codable {
 class PhraseFetchManager:  NSObject, ObservableObject {
     @Published var currentPhrases: [PhraseWrapper] = []
     @Published var foundPhrases: String = "Fetching phrases..."
+    @Published var refreshCompleted = false
     let locationManager: KakaoLocationManager = KakaoLocationManager()
     private var serverAddress: String
     
@@ -50,6 +51,8 @@ class PhraseFetchManager:  NSObject, ObservableObject {
     
     
     func fetchPhrases(mode: String = "new") {
+        self.refreshCompleted = false
+        
         let url = URL(string: serverAddress)!
         print("Fetching phrases from: \(url)")
         var request = URLRequest(url: url)
@@ -60,15 +63,18 @@ class PhraseFetchManager:  NSObject, ObservableObject {
             "name": locationManager.place?.name ?? "Unknown",
             "category": locationManager.place?.category ?? "Unknown",
             "address": locationManager.place?.address ?? "Unknown",
+            "time": currentDateTime(),
             "mode": mode
         ]
         print("Request object: \(requestObject)")
+        print("DateTime:" + currentDateTime())
         request.httpBody = try? JSONSerialization.data(withJSONObject: requestObject)
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
                     if let error = error {
                         print("Failed to fetch phrase info: \(error)")
                         DispatchQueue.main.async {
                             self?.foundPhrases = "Failed to fetch phrases"
+                            self?.refreshCompleted = true
                         }
                         return
                     }
@@ -80,12 +86,24 @@ class PhraseFetchManager:  NSObject, ObservableObject {
                         //print(response)
                         DispatchQueue.main.async {
                             self?.currentPhrases = response.phrases
+                            self?.refreshCompleted = true
                         }
                         print("Fetched phrases: \(response.phrases)")
                     } catch {
                         print("Decoding error with phrases: \(error)")
+                        DispatchQueue.main.async {
+                            self?.refreshCompleted = true
+                        }
                     }
                 }
         task.resume()
+    }
+    
+    func currentDateTime() -> String {
+        let RFC3339DateFormatter = DateFormatter()
+        RFC3339DateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        RFC3339DateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        
+        return RFC3339DateFormatter.string(from: Date())
     }
 }
