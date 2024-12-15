@@ -35,14 +35,33 @@ enum SupportedLanguage: String, CaseIterable {
 }
 
 class LocalizedManager: ObservableObject {
-    @Published var currentLanguage: SupportedLanguage = .korean
-    @Published var categories: [Category] = []
+    @Published var currentLanguage: SupportedLanguage {
+            didSet {
+                saveLanguageToUserDefaults()
+            }
+        }
+    //@Published var currentLanguage: SupportedLanguage = .korean
     
     static let shared = LocalizedManager()
+    private let languageKey = "SelectedLanguage" // Key for UserDefaults
+
+    
     private init() {
+        self.currentLanguage = LocalizedManager.loadLanguageFromUserDefaults()
     }
     
     func changeLanguage(to language: SupportedLanguage) {
         currentLanguage = language
     }
+    
+    private func saveLanguageToUserDefaults() {
+        UserDefaults.standard.set(currentLanguage.rawValue, forKey: languageKey)
+    }
+    private static func loadLanguageFromUserDefaults() -> SupportedLanguage {
+            if let savedLanguage = UserDefaults.standard.string(forKey: "SelectedLanguage"),
+               let language = SupportedLanguage(rawValue: savedLanguage) {
+                return language
+            }
+            return .korean // Default to Korean if no saved language
+        }
 }
