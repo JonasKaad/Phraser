@@ -43,6 +43,9 @@ class PhraseFetchManager: ObservableObject {
     @Published var refreshCompleted = false
     @Published var isLoading = false
     
+    private var previousPlace: String = ""
+    private var previousAddress: String = ""
+    
     let locationManager: KakaoLocationManager = KakaoLocationManager()
     private var serverAddress: String
     private var currentTask: Task<Void, Never>? // To keep track of ongoing tasks
@@ -70,6 +73,8 @@ class PhraseFetchManager: ObservableObject {
     func fetchPhrases(mode: String = "new") async {
         cancelOngoingTask()
         
+        var mode = mode
+        
         self.refreshCompleted = false
         self.isLoading = true
         
@@ -85,13 +90,24 @@ class PhraseFetchManager: ObservableObject {
                 request.httpMethod = "POST"
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
                 
+                if mode == "refresh" {
+                    if previousPlace != locationManager.place?.name && previousAddress != locationManager.place?.address {
+                        print("Place has changed, fetching new phrases")
+                        mode = "new"
+                    }
+                }
+                
                 let requestObject: [String: String] = [
                     "name": locationManager.place?.name ?? "Unknown",
                     "category": locationManager.place?.category ?? "Unknown",
                     "address": locationManager.place?.address ?? "Unknown",
                     "time": currentDateTime(),
-                    "mode": mode
+                    "mode": mode,
+                    "lang": "Korean"
                 ]
+                
+                previousPlace = locationManager.place?.name ?? "Unknown"
+                previousAddress = locationManager.place?.address ?? "Unknown"
                 
                 print("Request object: \(requestObject)")
                 
