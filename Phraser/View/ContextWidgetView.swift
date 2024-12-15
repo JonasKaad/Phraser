@@ -50,6 +50,5 @@ func currentTime() -> String {
 }
 
 #Preview{
-    let phrases: [PhraseWrapper] = [PhraseWrapper(phrase: "Good evening!", translation: "좋은 저녁", transliteration: "joeun jonyok")]
     ContextualPhraseView()
 }

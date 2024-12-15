@@ -103,27 +103,7 @@ struct ContextualPhraseDisplayView: View {
             
             .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
             .padding(.horizontal, 10)
-           // .onAppear(perform: translateText)
         }
-    //}
-    
-
-//    private func translateText() {
-//            isLoading = true
-//            errorMessage = nil
-//            
-//            translator?.translate(text: text, to: "ko") { translatedText, transliteration, error in
-//                DispatchQueue.main.async {
-//                    isLoading = false
-//                    if let error = error {
-//                        self.errorMessage = error.localizedDescription
-//                    } else {
-//                        self.translation = translatedText ?? ""
-//                        self.phonetic = transliteration ?? ""
-//                    }
-//                }
-//            }
-//        }
 }
 
 struct AddToPhraseView: View {
