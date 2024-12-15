@@ -19,7 +19,8 @@ struct ContentView: View {
     @State private var isShowingAddSheet = false
     @State private var notification: ToastNotification?
     @State private var sortOption: SortOption = .oldestFirst
-    
+    @ObservedObject var localizedManager = LocalizedManager.shared
+
     enum SortOption {
         case oldestFirst
         case newestFirst
@@ -40,6 +41,11 @@ struct ContentView: View {
                             .font(.largeTitle.bold())
                             .padding(.leading, 4)
                         Spacer()
+                        NavigationLink(destination: PhraseBookView()) {
+                            Text(flag(for: localizedManager.currentLanguage.localeInfo.flag.uppercased()))
+                                .font(.system(size: 40))
+                                .padding(.trailing, 4)
+                            }
                         Menu {
                             Picker("Sorting Order", selection: $sortOption) {
                                 Text("Oldest First").tag(SortOption.oldestFirst)
@@ -64,7 +70,7 @@ struct ContentView: View {
                     // For each category stored in the database show a CategoryView
                     ContextualView()
                         .roundedCorners(color: Color.purple)
-                    ForEach(sortCategory(categories)) { category in
+                    ForEach(sortCategory(categories.filter { $0.language == localizedManager.currentLanguage.rawValue })) { category in
                         CategoryView(category: category)
                             .transition(.asymmetric(
                                 insertion: .scale.combined(with: .opacity),
@@ -113,10 +119,12 @@ struct ContentView: View {
     private func createCategory(_name: String, _logo: String) {
         let categoryName = _name
         let categoryLogo = _logo
-        let newCategory = Category(id: UUID(), timestamp: Date(), name: categoryName, logo: categoryLogo)
+        let newCategory = Category(id: UUID(), timestamp: Date(), name: categoryName, logo: categoryLogo, language: localizedManager.currentLanguage.rawValue)
         withAnimation(.spring()) {
             modelContext.insert(newCategory)
         }
+        print("Category created: \(newCategory)")
+        print("Raw value: \(localizedManager.currentLanguage.rawValue)")
     }
     
     private func sortCategory(_ categories: [Category]) -> [Category] {
@@ -128,6 +136,11 @@ struct ContentView: View {
             return categories.sorted { $0.timestamp < $1.timestamp }
         case .newestFirst:
             return categories.sorted { $0.timestamp > $1.timestamp }
+        }
+    }
+    func flag(for country: String) -> String {
+        country.uppercased().unicodeScalars.reduce(into: "") {
+            $0.unicodeScalars.append(UnicodeScalar(127397 + $1.value)!)
         }
     }
 }
