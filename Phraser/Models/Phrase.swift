@@ -11,9 +11,9 @@ import SwiftData
 
 @Model
 final class Phrase:  ObservableObject, Identifiable{
-    var id: UUID
+    @Attribute(.unique) var id: UUID
     var timestamp: Date
-    var category: Category
+    var category: Category?
     var text: String  {
         didSet {
             objectWillChange.send()

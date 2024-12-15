@@ -11,7 +11,7 @@ import SwiftUI
 
 @Model
 final class Category: ObservableObject, Identifiable {
-    var id: UUID
+    @Attribute(.unique) var id: UUID
     var timestamp: Date
     var name: String {
         didSet {
