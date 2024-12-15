@@ -51,19 +51,20 @@ struct PhraseBookView: View {
             
                 VStack {
                     Spacer()
-                    Button("Select") {
-                        isPresented = false
+                    Button(action: {isPresented = false}) {
+                        HStack {
+                            Spacer()
+                            Text("Select")
+                                .font(.title)
+                                .padding()
+                                .foregroundColor(.white)
+                            Spacer()
+                        }
+                        .contentShape(Rectangle())
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                        .frame(maxWidth: 160)
                     }
-                    .frame(maxWidth: 160, maxHeight: 16)
-                    .frame(maxWidth: 160)
-                    .font(.title)
-                    .padding()
-                    .foregroundColor(.white)
-                    
-                    .background(Color.blue)
-                    .listRowBackground(Color.blue)
-                    
-                    .cornerRadius(8)
                     Spacer()
                 }
             }
