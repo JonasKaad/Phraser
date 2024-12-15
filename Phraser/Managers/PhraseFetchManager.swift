@@ -44,6 +44,7 @@ class PhraseFetchManager: ObservableObject {
     @Published var isLoading = false
     
     private var previousPlace: String = ""
+    private var previousCategory: String = ""
     private var previousAddress: String = ""
     
     let locationManager: KakaoLocationManager = KakaoLocationManager()
@@ -97,17 +98,19 @@ class PhraseFetchManager: ObservableObject {
                     }
                 }
                 
+                previousPlace = locationManager.place?.name ?? "Unknown"
+                previousAddress = locationManager.place?.address ?? "Unknown"
+                previousCategory = locationManager.place?.category ?? "Unknown"
+                
                 let requestObject: [String: String] = [
-                    "name": locationManager.place?.name ?? "Unknown",
-                    "category": locationManager.place?.category ?? "Unknown",
-                    "address": locationManager.place?.address ?? "Unknown",
+                    "name": previousPlace,
+                    "category": previousCategory,
+                    "address": previousAddress,
                     "time": currentDateTime(),
                     "mode": mode,
                     "lang": "Korean"
                 ]
                 
-                previousPlace = locationManager.place?.name ?? "Unknown"
-                previousAddress = locationManager.place?.address ?? "Unknown"
                 
                 print("Request object: \(requestObject)")
                 
