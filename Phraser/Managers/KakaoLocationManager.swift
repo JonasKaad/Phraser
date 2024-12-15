@@ -59,38 +59,29 @@ struct Place: Codable {
 //}
 
 class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-//    private let clientId: String
     private var locationManager: CLLocationManager
     @Published var currentPlace: String = "Fetching location..."
     @Published var place:   Place?
-//    @Published var currentPhrases: [PhraseWrapper] = []
     private var serverAddress: String
 
     override init() {
         // Decode server address from Base64 encoding
-//        if let encodedAddress = Bundle.main.object(forInfoDictionaryKey: "SERVER_ADDRESS") as? String,
-//           let data = Data(base64Encoded: encodedAddress),
-//           let serverAddress = String(data: data, encoding: .utf8) {
-//            print("Decoded Server Address: \(serverAddress)")
-//            self.serverAddress = serverAddress
-//        } else {
-//            print("Failed to decode server address")
-//            self.serverAddress = "undefined"
-//        }
-//        if let savedId = UserDefaults.standard.string(forKey: "clientId") {
-//            self.clientId = savedId
-//        } else {
-//            let newId = UUID().uuidString
-//            UserDefaults.standard.set(newId, forKey: "clientId")
-//            self.clientId = newId
-//        }
-        self.serverAddress = "http://172.30.1.100:8080/geocode"
-        print("Server address: \(self.serverAddress)")
+        if let encodedAddress = Bundle.main.object(forInfoDictionaryKey: "SERVER_ADDRESS") as? String,
+           let data = Data(base64Encoded: encodedAddress),
+           let serverAddress = String(data: data, encoding: .utf8) {
+            //print("Decoded Server Address: \(serverAddress)")
+            self.serverAddress = serverAddress
+        } else {
+            print("Failed to decode server address")
+            self.serverAddress = "undefined"
+        }
+        //self.serverAddress = "http://172.30.1.100:8080/geocode"
         locationManager = CLLocationManager()
         super.init()
         locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
+        locationManager.startMonitoringSignificantLocationChanges()
         locationManager.startUpdatingLocation()
     }
 
@@ -113,8 +104,6 @@ class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegat
         let coordinates: [String: Double] = [
                 "latitude": location.coordinate.latitude,
                 "longitude": location.coordinate.longitude
-//                "mode": "new",
-//                "clientId": clientId
         ]
         request.httpBody = try? JSONSerialization.data(withJSONObject: coordinates)
         
@@ -151,85 +140,5 @@ class KakaoLocationManager: NSObject, ObservableObject, CLLocationManagerDelegat
                     }
                 }
                 task.resume()
-        
-        
-        
-//        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-//                guard let data = data, error == nil else {
-//                    print("Failed to fetch place info: \(error?.localizedDescription ?? "error fetching")")
-//                    DispatchQueue.main.async {
-//                        self?.currentPlace = "Failed to fetch location"
-//                    }
-//                    return
-//                }
-//                
-//                do {
-//                    // let fullResponse = try JSONDecoder().decode(GeocodeResponse.self, from: data)
-//                    
-//                    // DispatchQueue.main.async {
-//                    //     // Update location display
-//                    //     if fullResponse.location.isInPlace, let place = fullResponse.location.place {
-//                    //         let distance = place.distance >= 1000 ?
-//                    //             String(format: "%.1fkm", Double(place.distance)/1000) :
-//                    //             "\(place.distance)m"
-//                            
-//                    //         self?.currentPlace = "\(place.name) (\(distance))"
-//                    //     } else {
-//                    //         self?.currentPlace = fullResponse.location.message ?? "Not in any known location"
-//                    //     }
-//                        
-//                    //     // Handle phrases
-//                    //     self?.currentPlace = fullResponse.location.place?.name ?? "Unknown"
-//                    //     if !fullResponse.phrases.isEmpty {
-//                    //         self?.currentPhrases = fullResponse.phrases
-//                    //     } else {
-//                    //         print("No phrases found")
-//                    //         return
-//                    //     }
-//                    // }
-//                    // Try first to decode as full response
-//                    if let fullResponse = try? JSONDecoder().decode(GeocodeResponse.self, from: data) {
-//                        //print("Decoding full response: \(fullResponse)")
-//                        print("full")
-//                        DispatchQueue.main.async {
-//                            if fullResponse.location.isInPlace, let place = fullResponse.location.place {
-//                               // print("Updating current place from full: \(place)")
-//                                let distance = place.distance >= 1000 ?
-//                                    String(format: "%.1fkm", Double(place.distance)/1000) :
-//                                    "\(place.distance)m"
-//                                self?.currentPlace = "\(place.name) (\(distance))"
-//                            }
-//                            self?.currentPhrases = fullResponse.phrases
-//                        }
-//                        return
-//                    }
-//
-//                    // Fallback to location-only response
-//                    let locationResponse = try JSONDecoder().decode(LocationOnlyResponse.self, from: data)
-//                    //print("Decoding location-only response: \(locationResponse)")
-//                    print("location")
-//                    DispatchQueue.main.async {
-//                        if locationResponse.location.isInPlace, let place = locationResponse.location.place {
-//                            //print("Updating current place from location: \(place)")
-//                            let distance = place.distance >= 1000 ?
-//                                String(format: "%.1fkm", Double(place.distance)/1000) :
-//                                "\(place.distance)m"
-//                            self?.currentPlace = "\(place.name) (\(distance))"
-//                        } else {
-//                            self?.currentPlace = locationResponse.location.message ?? "Unknown location"
-//                        }
-//                    }
-//
-//                } catch {
-//                    print("Decoding error: \(error)")
-//                    if let jsonString = String(data: data, encoding: .utf8) {
-//                        print("Failed to decode JSON: \(jsonString)")
-//                    }
-//                    DispatchQueue.main.async {
-//                        self?.currentPlace = "Error decoding location"
-//                    }
-//                }
-//            }
-//            task.resume()
     }
 }
