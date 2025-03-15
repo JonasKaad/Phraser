@@ -1,7 +1,7 @@
 # Phraser
-
-<img src="./readme_assets/phraser.PNG" alt="logo" width=25% height=25% />
-
+<p align="center">
+   <img src="./readme_assets/phraser.png" alt="logo" width=25% height=25%/>
+</p>
 Phraser is an app designed to help users quickly access and save translated phrases in various languages based on customizable categories. The app's main functionality includes displaying, translating, and organizing phrases into folders for quick retrieval. Additionally, the app has a context-aware assistant, which provides relevant phrases based on factors such as time of day or location.
 
 ## Features
@@ -11,9 +11,13 @@ Phraser is an app designed to help users quickly access and save translated phra
 - **Phonetic Support**: Along with translations, phonetic representations are provided to assist with pronunciation.
 - **Audio Playback**: Translated phrases can be played aloud to help with pronunciation and language learning.
 - **Context-Aware Suggestions**: The app suggests phrases based on context (e.g., time of day), which users can add to their own categories.
-- **User-Friendly Interface**: Makes use of SwiftUI’s `LazyVGrid` for efficient and clean category display, alongside a streamlined phrase entry and display interface.
+- **User-Friendly Interface**: Makes use of SwiftUI for an efficient and clean category display, alongside a streamlined phrase entry and display interface.
 
 ## Video Demo
+
+
+
+https://github.com/user-attachments/assets/89f8e3f6-241a-4be9-b109-005f2e407d55
 
 
 
@@ -35,7 +39,7 @@ Phraser is an app designed to help users quickly access and save translated phra
 
 | Context-Aware Phrases, side by side          |
 | -------------------------------------------- |
-| ![context](./readme_assets/context.png)      |
+| ![context](./readme_assets/context.PNG)      |
 | **Basic architectural overview**             |
 | ![phrases](./readme_assets/architecture.png) |
 
